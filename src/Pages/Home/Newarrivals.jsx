@@ -32,10 +32,10 @@ const Newarrivals = () => {
 
   return (
     <div className="py-12 bg-gray-50">
+    
       <h1 className="text-center text-3xl font-bold text-gray-800 mb-10">
          New Arrivals
       </h1>
-
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
         {products.map((p, idx) => (
           <div

@@ -18,7 +18,7 @@ const PaymentStripe = () => {
     return (
         <div>
           <Elements stripe={stripePromice}>
-            <CheckoutForm product={selectedproduct} />
+            <CheckoutForm  product={selectedproduct} />
           </Elements>
         </div>
     );

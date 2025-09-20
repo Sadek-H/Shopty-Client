@@ -10,14 +10,17 @@ const Productdetails = () => {
   const data = useLoaderData();
   const { id } = useParams();
   const { user } = useContext(AuthContext);
-
+  const [selectedImage, setSelectedImage] = useState();
   const [product, setProduct] = useState(null);
+  console.log(product);
   const [rating, setRating] = useState(null);
   const [reviews, setReviews] = useState([]);
   console.log(reviews);
+
+
   // Find product
   useEffect(() => {
-    const founddata = data.find((p) => p._id === id);
+    const founddata = data?.find((p) => p._id === id);
     setProduct(founddata);
   }, [data, id]);
 
@@ -73,13 +76,14 @@ const Productdetails = () => {
   };
 
   // Delete review
-  const handleDeleteReview = (reviewId) => {;
-              axios.delete(`http://localhost:3000/reviews/${reviewId}`)
-              .then((res)=>{
-                toast.success("Review deleted successfully!", res);
-                setReviews((prevreview)=> prevreview.filter((rev)=> rev._id !== reviewId))
-              })
-            }
+  const handleDeleteReview = (reviewId) => {
+    axios.delete(`http://localhost:3000/reviews/${reviewId}`).then((res) => {
+      toast.success("Review deleted successfully!", res);
+      setReviews((prevreview) =>
+        prevreview.filter((rev) => rev._id !== reviewId)
+      );
+    });
+  };
   return (
     <div className="container mx-auto px-4 py-10">
       {/* Product Details */}
@@ -89,13 +93,36 @@ const Productdetails = () => {
 
       <div className="grid md:grid-cols-2 gap-8 bg-white shadow-lg rounded-2xl p-6">
         {/* Product Image */}
-        <div className="flex justify-center items-center">
-          <img
-            src={product.images}
-            alt={product.name}
-            className="rounded-2xl max-h-[400px] object-contain shadow-md"
-          />
-        </div>
+  <div className="grid grid-cols-5 gap-4">
+  {/* Left side thumbnails */}
+  <div className="flex flex-col items-center justify-center gap-3 col-span-1">
+    {product.images?.slice(1).map((img, index) => (
+      <img
+        key={index}
+        src={`http://localhost:3000${img}`}
+        alt={`Thumbnail ${index}`}
+        onClick={() => setSelectedImage(index + 1)}
+        className={`w-20 h-20 object-cover rounded cursor-pointer border ${
+          selectedImage === index + 1 ? "border-blue-600 ring-2 ring-blue-400" : "border-gray-300"
+        }`}
+      />
+    ))}
+  </div>
+
+  {/* Main image */}
+  <div className="col-span-4 flex justify-center items-center">
+    {product.images?.length > 0 ? (
+      <img
+        src={`http://localhost:3000${product.images[selectedImage ?? 0]}`}
+        alt={product.name}
+        className="w-full h-full object-cover rounded-lg shadow-md"
+      />
+    ) : (
+      <p>No image available</p>
+    )}
+  </div>
+</div>
+
 
         {/* Product Info */}
         <div className="space-y-5">
@@ -144,7 +171,10 @@ const Productdetails = () => {
           </p>
 
           <div className="flex gap-4 mt-6">
-            <Link to={`/payment/${product._id}`} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md transition">
+            <Link
+              to={`/payment/${product._id}`}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md transition"
+            >
               Buy Now
             </Link>
           </div>
@@ -192,10 +222,7 @@ const Productdetails = () => {
                 {/* Left: User info + review */}
                 <div className="flex gap-3">
                   <img
-                    src={
-                      review.photo ||
-                      "https://i.ibb.co/4pDNDk1/avatar.png"
-                    }
+                    src={review.photo || "https://i.ibb.co/4pDNDk1/avatar.png"}
                     alt={review.name || "User"}
                     className="w-10 h-10 rounded-full border border-gray-300 object-cover"
                   />

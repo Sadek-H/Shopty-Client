@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { MdDeleteForever } from "react-icons/md";
 
 const categoryFields = {
   electronics: [
@@ -14,7 +15,12 @@ const categoryFields = {
     { name: "size", label: "Size (S, M, L, XL)", type: "text" },
     { name: "color", label: "Color", type: "text" },
     { name: "material", label: "Material", type: "text" },
-    { name: "gender", label: "Gender", type: "select", options: ["Men", "Women", "Unisex"] },
+    {
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      options: ["Men", "Women", "Unisex"],
+    },
   ],
   books: [
     { name: "author", label: "Author", type: "text" },
@@ -24,7 +30,12 @@ const categoryFields = {
     { name: "edition", label: "Edition", type: "text" },
   ],
   gaming: [
-    { name: "platform", label: "Platform", type: "select", options: ["PC", "PS5", "Xbox", "Nintendo"] },
+    {
+      name: "platform",
+      label: "Platform",
+      type: "select",
+      options: ["PC", "PS5", "Xbox", "Nintendo"],
+    },
     { name: "genre", label: "Genre", type: "text" },
     { name: "pegi", label: "PEGI Rating", type: "number" },
     { name: "developer", label: "Developer", type: "text" },
@@ -33,14 +44,25 @@ const categoryFields = {
 
 const AddProduct = () => {
   const [category, setCategory] = useState("");
-
+  const [FileSystem, setFiles] = useState([]);
+  console.log(FileSystem);
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target));
-    console.log("Submitted Product Data:", data);
+    const formdata = new FormData(e.target);
+    formdata.delete('images');
+     FileSystem.forEach(file => {
+      formdata.append('images',file);
+     });
+    console.log("Submitted Product Data:", formdata);
 
-    axios.post("http://localhost:3000/products", data)
-      .then(() => {
+    axios
+      .post("http://localhost:3000/products", formdata,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      })
+      .then((res) => {
+        console.log(res.data);
         e.target.reset();
         toast.success("Product added successfully!");
       })
@@ -48,10 +70,28 @@ const AddProduct = () => {
         toast.error(`Failed to add product: ${err.message}`);
       });
   };
+ 
+  const handlefile = (e) => {
+    
+     const files = Array.from(e.target.files);
+     setFiles(
+       (prevFiles) => {
+         const combined = [...prevFiles, ...files];
+         return combined.slice(0, 4); 
+       }
+     );
+
+  }
+  const handleDelete = (name) => {
+    console.log(name);
+    setFiles((prevFiles) => prevFiles.filter((file) => file.name !== name));
+  };
 
   return (
     <div className="w-full rounded-2xl shadow-xl p-8 bg-gray-50 px-4">
-      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">Add Product</h2>
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+        Add Product
+      </h2>
       <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8 rounded"></div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Common Fields */}
@@ -68,7 +108,12 @@ const AddProduct = () => {
           className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
           required
         >
-          <option className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition text-gray-500" value="">Select Category</option>
+          <option
+            className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition text-gray-500"
+            value=""
+          >
+            Select Category
+          </option>
           {Object.keys(categoryFields).map((cat) => (
             <option key={cat} value={cat}>
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -130,11 +175,36 @@ const AddProduct = () => {
           ))}
 
         {/* Image Upload */}
-        <input
-          name="images"
-          placeholder="Image URL"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
-        />
+        <div>
+          <label
+            htmlFor="images"
+            className="block w-full cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500 hover:border-blue-500 hover:text-blue-500 transition"
+          >
+            📁 Click to upload files 
+            <input
+              type="file"
+              id="images"
+              name="images"
+              multiple
+              className="hidden"
+              onChange={handlefile}
+            />
+          </label>
+         <div className="mt-4 flex gap-4">
+           {FileSystem.map((file, i) => (
+            <div key={i} className="shadow p-3 rounded relative">
+              <img
+                src={URL.createObjectURL(file)}
+                alt={file.name}
+                className="w-14 h-14 object-cover rounded"
+              />
+              
+         
+             <span onClick={() => handleDelete(file.name)} className="text-red-500 hover:text-red-800 cursor-pointer absolute top-1 right-0 "><MdDeleteForever /></span>
+            </div>
+          ))}
+         </div>
+        </div>
 
         <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Add Product
