@@ -96,14 +96,14 @@ const Productdetails = () => {
   <div className="grid grid-cols-5 gap-4">
   {/* Left side thumbnails */}
   <div className="flex flex-col items-center justify-center gap-3 col-span-1">
-    {product.images?.slice(1).map((img, index) => (
+    {product.images?.map((img, index) => (
       <img
         key={index}
         src={`http://localhost:3000${img}`}
         alt={`Thumbnail ${index}`}
-        onClick={() => setSelectedImage(index + 1)}
+        onClick={() => setSelectedImage(index)}
         className={`w-20 h-20 object-cover rounded cursor-pointer border ${
-          selectedImage === index + 1 ? "border-blue-600 ring-2 ring-blue-400" : "border-gray-300"
+          selectedImage === index ? "border-blue-600 ring-2 ring-blue-400" : "border-gray-300"
         }`}
       />
     ))}
@@ -130,9 +130,7 @@ const Productdetails = () => {
           <p className="text-lg text-gray-600">
             <span className="font-semibold">Brand:</span> {product.brand}
           </p>
-          <p className="text-lg text-gray-600">
-            <span className="font-semibold">Category:</span> {product.category}
-          </p>
+         
           <p className="text-lg text-gray-600">
             <span className="font-semibold">Model:</span> {product.model}
           </p>
@@ -146,10 +144,15 @@ const Productdetails = () => {
               <span className="text-red-600 font-semibold">Out of Stock</span>
             )}
           </p>
-          <p className="text-2xl font-bold text-blue-600">${product.price}</p>
-          <p className="text-gray-700 leading-relaxed">{product.description}</p>
+          <p className="text-2xl font-bold text-blue-600">Price: ${product.price}</p>
 
+          <p className="text-xl font-bold text-gray-600">Quick Overview:</p>
           <div>
+            
+          </div>
+          {/* <p className="text-gray-700 leading-relaxed">{product.description}</p> */}
+
+          {/* <div>
             <p className="font-semibold text-lg mb-2">Specification</p>
             {product.specs && (
               <ul className="list-disc list-inside">
@@ -160,7 +163,7 @@ const Productdetails = () => {
                 ))}
               </ul>
             )}
-          </div>
+          </div> */}
 
           <p className="font-semibold text-lg mb-2">Warranty</p>
           <p className="text-gray-600">{product.warranty}</p>

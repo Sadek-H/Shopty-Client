@@ -1,89 +1,71 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { MdDeleteForever } from "react-icons/md";
 
-const categoryFields = {
-  electronics: [
-    { name: "brand", label: "Brand", type: "text" },
-    { name: "model", label: "Model", type: "text" },
-    { name: "warranty", label: "Warranty (e.g. 1 Year)", type: "text" },
-    { name: "specs", label: "Specifications", type: "textarea" },
-  ],
-  fashion: [
-    { name: "brand", label: "Brand", type: "text" },
-    { name: "size", label: "Size (S, M, L, XL)", type: "text" },
-    { name: "color", label: "Color", type: "text" },
-    { name: "material", label: "Material", type: "text" },
-    {
-      name: "gender",
-      label: "Gender",
-      type: "select",
-      options: ["Men", "Women", "Unisex"],
-    },
-  ],
-  books: [
-    { name: "author", label: "Author", type: "text" },
-    { name: "publisher", label: "Publisher", type: "text" },
-    { name: "isbn", label: "ISBN", type: "text" },
-    { name: "language", label: "Language", type: "text" },
-    { name: "edition", label: "Edition", type: "text" },
-  ],
-  gaming: [
-    {
-      name: "platform",
-      label: "Platform",
-      type: "select",
-      options: ["PC", "PS5", "Xbox", "Nintendo"],
-    },
-    { name: "genre", label: "Genre", type: "text" },
-    { name: "pegi", label: "PEGI Rating", type: "number" },
-    { name: "developer", label: "Developer", type: "text" },
-  ],
+const subCategorySpecs = {
+  mobile: ["Display", "Battery", "Camera", "RAM", "Storage"],
+  laptops: ["Processor", "RAM", "Storage", "GPU", "Screen Size"],
+  accessories: ["Type", "Compatibility", "Color", "Warranty"],
 };
 
 const AddProduct = () => {
   const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
   const [FileSystem, setFiles] = useState([]);
-  console.log(FileSystem);
+ const [specs, setSpecs] = useState([]);
+
+
+useEffect(() => {
+  if (subCategory) {
+    const initialSpecs = subCategorySpecs[subCategory].map((key) => ({
+      key,
+      value: "",
+    }));
+    setSpecs(initialSpecs);
+  }
+}, [subCategory]);
+
+const addSpec = () => {
+     
+}
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formdata = new FormData(e.target);
-    formdata.delete('images');
-     FileSystem.forEach(file => {
-      formdata.append('images',file);
-     });
-    console.log("Submitted Product Data:", formdata);
+
+    // images
+    formdata.delete("images");
+    FileSystem.forEach((file) => {
+      formdata.append("images", file);
+    });
+
+  
 
     axios
-      .post("http://localhost:3000/products", formdata,{
-        headers: {
-          "Content-Type": "multipart/form-data",
-        }
+      .post("http://localhost:3000/products", formdata, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
         console.log(res.data);
         e.target.reset();
+       
         toast.success("Product added successfully!");
       })
       .catch((err) => {
         toast.error(`Failed to add product: ${err.message}`);
       });
   };
- 
-  const handlefile = (e) => {
-    
-     const files = Array.from(e.target.files);
-     setFiles(
-       (prevFiles) => {
-         const combined = [...prevFiles, ...files];
-         return combined.slice(0, 4); 
-       }
-     );
 
-  }
+  const handlefile = (e) => {
+    const files = Array.from(e.target.files);
+    setFiles((prevFiles) => {
+      const combined = [...prevFiles, ...files];
+      return combined.slice(0, 4); // max 4 files
+    });
+  };
+
   const handleDelete = (name) => {
-    console.log(name);
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== name));
   };
 
@@ -92,87 +74,108 @@ const AddProduct = () => {
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
         Add Product
       </h2>
-      <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8 rounded"></div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Common Fields */}
         <input
           name="name"
           placeholder="Product Name"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
+          className="w-full border rounded-lg p-3"
           required
         />
+
+        {/* Category */}
         <select
           name="category"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setSubCategory("");
+          }}
+          className="w-full border rounded-lg p-3"
           required
         >
-          <option
-            className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition text-gray-500"
-            value=""
-          >
-            Select Category
-          </option>
-          {Object.keys(categoryFields).map((cat) => (
-            <option key={cat} value={cat}>
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </option>
-          ))}
+          <option value="">Select Category</option>
+          <option value="electronics">Electronics</option>
+          <option value="fashion">Fashion</option>
+          <option value="books">Books</option>
+          <option value="gaming">Gaming</option>
         </select>
+
+        {/* SubCategory */}
+        {category === "electronics" && (
+          <select
+            name="subcategory"
+            value={subCategory}
+            onChange={(e) =>{
+              setSubCategory(e.target.value);
+              setSpecs([]); // Reset specs when subcategory changes
+            }}
+            className="w-full border rounded-lg p-3"
+            required
+          >
+            <option value="">Select Subcategory</option>
+            <option value="mobile">Mobile Phones</option>
+            <option value="laptops">Laptops</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        )}
+
         <input
           name="price"
           type="number"
           placeholder="Price"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
+          className="w-full border rounded-lg p-3"
           required
         />
         <input
           name="stock"
           type="number"
           placeholder="Stock Quantity"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
+          className="w-full border rounded-lg p-3"
           required
         />
         <textarea
           name="description"
           placeholder="Description"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
+          className="w-full border rounded-lg p-3"
         />
 
-        {/* Dynamic Fields */}
-        {category &&
-          categoryFields[category]?.map((field) => (
-            <div key={field.name}>
-              {field.type === "textarea" ? (
-                <textarea
-                  name={field.name}
-                  placeholder={field.label}
-                  className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
-                />
-              ) : field.type === "select" ? (
-                <select
-                  name={field.name}
-                  className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
-                  defaultValue=""
-                >
-                  <option value="">Select {field.label}</option>
-                  {field.options.map((opt, i) => (
-                    <option key={i} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  name={field.name}
-                  type={field.type}
-                  placeholder={field.label}
-                  className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg p-3 outline-none transition"
-                />
-              )}
+        {/* ✅ Specs Section */}
+        <div className="border rounded-lg p-4 bg-white">
+          <h3 className="font-semibold mb-3">Specifications</h3>
+          {specs.map((spec, index) => (
+            <div key={index} className="flex gap-2 mb-2 items-center">
+              <input
+                type="text"
+                placeholder="Key"
+                value={spec.key}
+               
+                className="w-1/3 border rounded-lg p-2"
+              />
+              <input
+                type="text"
+                placeholder="Value"
+                value={spec.value}
+              
+                className="w-2/3 border rounded-lg p-2"
+              />
+              <button
+                type="button"
+             //   onClick={() => removeSpec(index)}
+                className="text-red-500"
+              >
+                <MdDeleteForever size={20} />
+              </button>
             </div>
           ))}
+          <button
+            type="button"
+            onClick={addSpec}
+            className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
+          >
+            ➕ Add Spec
+          </button>
+        </div>
 
         {/* Image Upload */}
         <div>
@@ -180,7 +183,7 @@ const AddProduct = () => {
             htmlFor="images"
             className="block w-full cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500 hover:border-blue-500 hover:text-blue-500 transition"
           >
-            📁 Click to upload files 
+            📁 Click to upload files
             <input
               type="file"
               id="images"
@@ -190,20 +193,24 @@ const AddProduct = () => {
               onChange={handlefile}
             />
           </label>
-         <div className="mt-4 flex gap-4">
-           {FileSystem.map((file, i) => (
-            <div key={i} className="shadow p-3 rounded relative">
-              <img
-                src={URL.createObjectURL(file)}
-                alt={file.name}
-                className="w-14 h-14 object-cover rounded"
-              />
-              
-         
-             <span onClick={() => handleDelete(file.name)} className="text-red-500 hover:text-red-800 cursor-pointer absolute top-1 right-0 "><MdDeleteForever /></span>
-            </div>
-          ))}
-         </div>
+
+          <div className="mt-4 flex gap-4 flex-wrap">
+            {FileSystem.map((file, i) => (
+              <div key={i} className="shadow p-3 rounded relative">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  className="w-14 h-14 object-cover rounded"
+                />
+                <span
+                  onClick={() => handleDelete(file.name)}
+                  className="text-red-500 hover:text-red-800 cursor-pointer absolute top-1 right-0"
+                >
+                  <MdDeleteForever />
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
