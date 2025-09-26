@@ -27,17 +27,24 @@ useEffect(() => {
 }, [subCategory]);
 
 const addSpec = () => {
-     
+  setSpecs([...specs, { key: "", value: "" }]);
+}
+
+const RemoveInput = (index) => {
+ setSpecs(specs.filter((id)=> id !== index))
+
 }
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formdata = new FormData(e.target);
-
+    formdata.append("specifications", JSON.stringify(specs));
+    console.log(formdata);
     // images
     formdata.delete("images");
     FileSystem.forEach((file) => {
       formdata.append("images", file);
+      
     });
 
   
@@ -68,6 +75,8 @@ const addSpec = () => {
   const handleDelete = (name) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== name));
   };
+
+
 
   return (
     <div className="w-full rounded-2xl shadow-xl p-8 bg-gray-50 px-4">
@@ -143,25 +152,34 @@ const addSpec = () => {
         {/* ✅ Specs Section */}
         <div className="border rounded-lg p-4 bg-white">
           <h3 className="font-semibold mb-3">Specifications</h3>
-          {specs.map((spec, index) => (
+           {specs.map((spec, index) => (
             <div key={index} className="flex gap-2 mb-2 items-center">
               <input
                 type="text"
                 placeholder="Key"
                 value={spec.key}
-               
+                onChange={(e)=>{
+                  const newSpecs = [...specs];
+                  newSpecs[index].value = e.target.value;
+                  setSpecs(newSpecs);
+                }}
+              
                 className="w-1/3 border rounded-lg p-2"
               />
               <input
                 type="text"
                 placeholder="Value"
-                value={spec.value}
+                onChange={(e)=>{
+                  const newSpecs = [...specs];
+                  newSpecs[index].value = e.target.value;
+                  setSpecs(newSpecs);
+                }}
               
                 className="w-2/3 border rounded-lg p-2"
               />
               <button
                 type="button"
-             //   onClick={() => removeSpec(index)}
+                onClick={() => RemoveInput(index)}
                 className="text-red-500"
               >
                 <MdDeleteForever size={20} />
