@@ -17,6 +17,7 @@ const Productdetails = () => {
   const [reviews, setReviews] = useState([]);
   console.log(reviews);
 
+//[{"key":"Display","value":"fgg"},{"key":"Battery","value":"fg"},{"key":"Camera","value":"ffg"},{"key":"RAM","value":"fg"},{"key":"Storage","value":"ffg"}]
 
   // Find product
   useEffect(() => {

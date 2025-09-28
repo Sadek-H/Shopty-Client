@@ -46,7 +46,11 @@ const Newarrivals = () => {
             <div className="relative">
               <img
                 className="h-56 w-full object-cover rounded-t-2xl"
-                src={p.images}
+                 src={
+    p.images?.length > 0
+      ? `http://localhost:3000${p.images[0]}`
+      : "/placeholder.png"
+  }
                 alt={p.name}
               />
               <span className="absolute top-3 left-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-lg shadow">
