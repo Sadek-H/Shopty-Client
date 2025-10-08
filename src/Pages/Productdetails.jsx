@@ -10,31 +10,22 @@ const Productdetails = () => {
   const data = useLoaderData();
   const { id } = useParams();
   const { user } = useContext(AuthContext);
-  const [selectedImage, setSelectedImage] = useState();
+console.log(user);
+  const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
-  console.log(product);
   const [rating, setRating] = useState(null);
   const [reviews, setReviews] = useState([]);
-  console.log(reviews);
 
-//[{"key":"Display","value":"fgg"},{"key":"Battery","value":"fg"},{"key":"Camera","value":"ffg"},{"key":"RAM","value":"fg"},{"key":"Storage","value":"ffg"}]
-
-  // Find product
   useEffect(() => {
     const founddata = data?.find((p) => p._id === id);
     setProduct(founddata);
   }, [data, id]);
 
-  // Fetch reviews for this product
   useEffect(() => {
     if (id) {
       axios
         .get(`http://localhost:3000/products/${id}/reviews`)
-        .then((res) => {
-          console.log(res.data);
-
-          setReviews(res.data);
-        })
+        .then((res) => setReviews(res.data))
         .catch((err) => console.error("Error fetching reviews:", err));
     }
   }, [id]);
@@ -47,7 +38,7 @@ const Productdetails = () => {
     );
   }
 
-  // Submit review
+  // Handle review submit
   const handleSubmit = (e) => {
     e.preventDefault();
     const reviewText = e.target.review.value;
@@ -65,202 +56,242 @@ const Productdetails = () => {
     axios
       .post(`http://localhost:3000/products/${id}/reviews`, reviewData)
       .then((res) => {
-        toast.success("Review submitted successfully!", res);
+        console.log(res.data);
+        toast.success("Review submitted successfully!");
+        setReviews((prevReviews) => [...prevReviews, res.data]);
       })
       .catch((err) => {
         console.error("Error submitting review:", err);
         toast.error("Failed to submit review.");
       });
-    setReviews((prevReviews) => [...prevReviews, reviewData]);
+
     e.target.reset();
     setRating(null);
   };
 
-  // Delete review
+  // Handle review delete
   const handleDeleteReview = (reviewId) => {
-    axios.delete(`http://localhost:3000/reviews/${reviewId}`).then((res) => {
-      toast.success("Review deleted successfully!", res);
+    axios.delete(`http://localhost:3000/reviews/${reviewId}`).then(() => {
+      toast.success("Review deleted successfully!");
       setReviews((prevreview) =>
         prevreview.filter((rev) => rev._id !== reviewId)
       );
     });
   };
+
+  // Specifications parse
+  let specifications = [];
+  try {
+    specifications =
+      typeof product.specifications === "string"
+        ? JSON.parse(product.specifications)
+        : product.specifications || [];
+  } catch (err) {
+    specifications = [];
+  }
+
   return (
     <div className="container mx-auto px-4 py-10">
-      {/* Product Details */}
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
-        Product Details
-      </h1>
-
-      <div className="grid md:grid-cols-2 gap-8 bg-white shadow-lg rounded-2xl p-6">
-        {/* Product Image */}
-  <div className="grid grid-cols-5 gap-4">
-  {/* Left side thumbnails */}
-  <div className="flex flex-col items-center justify-center gap-3 col-span-1">
-    {product.images?.map((img, index) => (
-      <img
-        key={index}
-        src={`http://localhost:3000${img}`}
-        alt={`Thumbnail ${index}`}
-        onClick={() => setSelectedImage(index)}
-        className={`w-20 h-20 object-cover rounded cursor-pointer border ${
-          selectedImage === index ? "border-blue-600 ring-2 ring-blue-400" : "border-gray-300"
-        }`}
-      />
-    ))}
-  </div>
-
-  {/* Main image */}
-  <div className="col-span-4 flex justify-center items-center">
-    {product.images?.length > 0 ? (
-      <img
-        src={`http://localhost:3000${product.images[selectedImage ?? 0]}`}
-        alt={product.name}
-        className="w-full h-full object-cover rounded-lg shadow-md"
-      />
-    ) : (
-      <p>No image available</p>
-    )}
-  </div>
-</div>
-
-
-        {/* Product Info */}
-        <div className="space-y-5">
-          <h2 className="text-3xl font-bold text-gray-800">{product.name}</h2>
-          <p className="text-lg text-gray-600">
-            <span className="font-semibold">Brand:</span> {product.brand}
-          </p>
-         
-          <p className="text-lg text-gray-600">
-            <span className="font-semibold">Model:</span> {product.model}
-          </p>
-          <p className="text-lg text-gray-600">
-            <span className="font-semibold">Stock:</span>{" "}
-            {Number(product.stock) > 0 ? (
-              <span className="text-green-600 font-semibold">
-                {product.stock} Available
-              </span>
-            ) : (
-              <span className="text-red-600 font-semibold">Out of Stock</span>
-            )}
-          </p>
-          <p className="text-2xl font-bold text-blue-600">Price: ${product.price}</p>
-
-          <p className="text-xl font-bold text-gray-600">Quick Overview:</p>
-          <div>
-            
+      {/* GRID like Amazon/Daraz */}
+      <div className="grid lg:grid-cols-12 gap-8">
+        {/* LEFT - Image Gallery */}
+        <div className="lg:col-span-5 bg-white p-4 rounded-xl shadow">
+          <div className="flex gap-3">
+            {/* Thumbnails */}
+            <div className="flex flex-col gap-3">
+              {product.images?.map((img, index) => (
+                <img
+                  key={index}
+                  src={`http://localhost:3000${img}`}
+                  alt={`Thumbnail ${index}`}
+                  onClick={() => setSelectedImage(index)}
+                  className={`w-20 h-20 object-cover rounded-lg border cursor-pointer transition ${
+                    selectedImage === index
+                      ? "border-blue-500 ring-2 ring-blue-300"
+                      : "border-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+            {/* Main Image */}
+            <div className="flex-1 flex items-center justify-center">
+              <img
+                src={`http://localhost:3000${
+                  product.images?.[selectedImage] || ""
+                }`}
+                alt={product.name}
+                className="rounded-lg shadow-lg max-h-[500px] object-contain"
+              />
+            </div>
           </div>
-          {/* <p className="text-gray-700 leading-relaxed">{product.description}</p> */}
+        </div>
 
-          {/* <div>
-            <p className="font-semibold text-lg mb-2">Specification</p>
-            {product.specs && (
-              <ul className="list-disc list-inside">
-                {product.specs.split(",").map((spec, index) => (
-                  <li key={index} className="text-gray-600">
-                    {spec.trim()}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div> */}
+        {/* MIDDLE - Product Info */}
+        <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow space-y-4">
+          <h2 className="text-2xl font-bold text-gray-900">{product.name}</h2>
 
-          <p className="font-semibold text-lg mb-2">Warranty</p>
-          <p className="text-gray-600">{product.warranty}</p>
+          {/* Ratings */}
+          <div className="flex items-center gap-2">
+            <Rating
+              initialRating={
+                reviews.length > 0
+                  ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length
+                  : 0
+              }
+              readonly
+              emptySymbol={<span className="text-gray-300 text-lg">★</span>}
+              fullSymbol={<span className="text-yellow-400 text-lg">★</span>}
+            />
+            <span className="text-sm text-gray-500">
+              ({reviews.length} Reviews)
+            </span>
+          </div>
 
           <p className="text-gray-600">
-            <span className="font-semibold">Added on :</span>{" "}
-            {new Date(product.createdAt).toLocaleDateString()}
+            <span className="font-semibold">Brand:</span> {product.brand}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Model:</span> {product.model}
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Warranty:</span> {product.warranty}
           </p>
 
-          <div className="flex gap-4 mt-6">
-            <Link
-              to={`/payment/${product._id}`}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md transition"
-            >
-              Buy Now
-            </Link>
-          </div>
+          <p className="text-lg font-semibold">Quick Overview:</p>
+          <ul className="list-disc list-inside text-gray-700">
+            {specifications.slice(0, 4).map((spec, idx) => (
+              <li key={idx}>
+                {spec.key}: {spec.value}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* RIGHT - Purchase Box */}
+        <div className="lg:col-span-3 bg-white p-6 rounded-xl shadow space-y-4 border">
+          <p className="text-3xl font-bold text-blue-600">
+            ${product.price}
+          </p>
+          <p className="text-sm text-gray-500">
+            Added on {new Date(product.createdAt).toLocaleDateString()}
+          </p>
+
+          {product.stock > 0 ? (
+            <p className="text-green-600 font-semibold">
+              In Stock ({product.stock} available)
+            </p>
+          ) : (
+            <p className="text-red-600 font-semibold">Out of Stock</p>
+          )}
+
+          <Link
+            to={`/payment/${product._id}`}
+            className="block text-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-lg shadow-md transition"
+          >
+            Buy Now
+          </Link>
+          <button className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition">
+            Add to Cart
+          </button>
         </div>
       </div>
 
-      {/* Review Section */}
-      <div className="mt-10 bg-gray-50 p-6 rounded-2xl shadow-md">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-          Leave a Review
-        </h3>
+      {/* DETAILS & REVIEWS SECTION */}
+      <div className="mt-10 bg-white p-6 rounded-xl shadow">
+        <div className="flex gap-6 border-b pb-3 mb-4">
+          <a href="#details" className="font-semibold text-gray-700 hover:text-blue-600">
+            Product Details
+          </a>
+          <a href="#specs" className="font-semibold text-gray-700 hover:text-blue-600">
+            Specifications
+          </a>
+          <a href="#reviews" className="font-semibold text-gray-700 hover:text-blue-600">
+            Reviews
+          </a>
+        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <Rating
-            initialRating={rating}
-            emptySymbol={<span className="text-gray-300 text-3xl">★</span>}
-            fullSymbol={<span className="text-yellow-400 text-3xl">★</span>}
-            fractions={2}
-            onChange={(rate) => setRating(rate)}
-          />
-          <textarea
-            name="review"
-            rows="3"
-            placeholder="Write your honest review here..."
-            className="w-full border border-green-300 rounded-lg p-3 text-sm"
-            required
-          ></textarea>
-          <button
-            type="submit"
-            className="self-end bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-2 rounded-xl shadow transition transform hover:scale-105"
-          >
-            Submit Review
-          </button>
-        </form>
+        {/* Full Description */}
+        <div id="details" className="mb-8">
+          <h3 className="text-xl font-bold mb-2">Product Description</h3>
+          <p className="text-gray-700 leading-relaxed">{product.description}</p>
+        </div>
 
-        {/* Display Reviews */}
-        <div className="mt-8">
+        {/* Specifications */}
+        <div id="specs" className="mb-8">
+          <h3 className="text-xl font-bold mb-2">Specifications</h3>
+          <table className="w-full border text-sm">
+            <tbody>
+              {specifications.map((spec, idx) => (
+                <tr key={idx} className="border-b">
+                  <td className="px-3 py-2 font-medium w-1/3 bg-gray-50">{spec.key}</td>
+                  <td className="px-3 py-2">{spec.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Reviews */}
+        <div id="reviews">
+          <h3 className="text-xl font-bold mb-4">Customer Reviews</h3>
+
+          {/* Review Form */}
+          <form onSubmit={handleSubmit} className="mb-6 bg-gray-50 p-4 rounded-lg">
+            <Rating
+              initialRating={rating}
+              emptySymbol={<span className="text-gray-300 text-2xl">★</span>}
+              fullSymbol={<span className="text-yellow-400 text-2xl">★</span>}
+              fractions={2}
+              onChange={(rate) => setRating(rate)}
+            />
+            <textarea
+              name="review"
+              rows="3"
+              placeholder="Write your honest review..."
+              className="w-full border rounded-lg p-3 text-sm mt-3"
+              required
+            ></textarea>
+            <button
+              type="submit"
+              className="mt-3 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+            >
+              Submit Review
+            </button>
+          </form>
+
+          {/* Review List */}
           {reviews.length > 0 ? (
             reviews.map((review) => (
               <div
                 key={review._id}
-                className="border-b border-gray-200 py-4 flex items-start justify-between"
+                className="border-b py-4 flex items-start justify-between"
               >
-                {/* Left: User info + review */}
                 <div className="flex gap-3">
                   <img
                     src={review.photo || "https://i.ibb.co/4pDNDk1/avatar.png"}
                     alt={review.name || "User"}
-                    className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+                    className="w-10 h-10 rounded-full border object-cover"
                   />
-
                   <div>
-                    <h4 className="font-semibold text-gray-800">
-                      {review.name || "Anonymous"}
-                    </h4>
-
-                    <div className="flex items-center">
-                      <Rating
-                        initialRating={review.rating}
-                        readonly
-                        emptySymbol={
-                          <span className="text-gray-300 text-xl">★</span>
-                        }
-                        fullSymbol={
-                          <span className="text-yellow-400 text-xl">★</span>
-                        }
-                      />
-                      <span className="ml-2 text-xs text-gray-500">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <p className="mt-1 text-gray-600">{review.reviewText}</p>
+                    <h4 className="font-semibold">{review.name || "Anonymous"}</h4>
+                    <Rating
+                      initialRating={review.rating}
+                      readonly
+                      emptySymbol={<span className="text-gray-300 text-sm">★</span>}
+                      fullSymbol={<span className="text-yellow-400 text-sm">★</span>}
+                    />
+                    <p className="text-sm text-gray-600 mt-1">
+                      {review.reviewText}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
-
-                {/* Delete Icon (if user is the author) */}
                 {user?.email === review.email && (
                   <button
                     onClick={() => handleDeleteReview(review._id)}
-                    className="text-red-500 hover:text-red-700 transition"
+                    className="text-red-500 hover:text-red-700"
                   >
                     <FaTrash />
                   </button>
