@@ -9,7 +9,7 @@ import PaymentStripe from "./Stripe/Payment";
 const Payment = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
- 
+
   // Track selected method
   const [method, setMethod] = useState("sslcommerz");
 
@@ -18,7 +18,7 @@ const Payment = () => {
 
     const email = e.target.customer_email?.value;
     const phone = e.target.customer_phone?.value;
-   
+
     try {
       if (method === "sslcommerz") {
         const res = await axios.post("http://localhost:3000/payment/initiate", {
