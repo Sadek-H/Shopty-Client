@@ -10,10 +10,10 @@ const subCategorySpecs = {
 };
 
 const AddProduct = () => {
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
-  const [FileSystem, setFiles] = useState([]);
- const [specs, setSpecs] = useState([]);
+const [category, setCategory] = useState("");
+const [subCategory, setSubCategory] = useState("");
+const [FileSystem, setFiles] = useState([]);
+const [specs, setSpecs] = useState([]);
 
 
 useEffect(() => {
@@ -39,7 +39,7 @@ const RemoveInput = (index) => {
     e.preventDefault();
     const formdata = new FormData(e.target);
     formdata.append("specifications", JSON.stringify(specs));
-    console.log(formdata);
+    console.log("Data",formdata);
     // images
     formdata.delete("images");
     FileSystem.forEach((file) => {
@@ -149,7 +149,7 @@ const RemoveInput = (index) => {
           className="w-full border rounded-lg p-3"
         />
 
-        {/* ✅ Specs Section */}
+        {/*  Specs Section */}
         <div className="border rounded-lg p-4 bg-white">
           <h3 className="font-semibold mb-3">Specifications</h3>
            {specs.map((spec, index) => (

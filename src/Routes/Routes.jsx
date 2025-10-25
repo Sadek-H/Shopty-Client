@@ -12,6 +12,7 @@ import BecomeRider from '../Pages/Dashboard/User/BecomeRider';
 import Productdetails from '../Pages/Productdetails';
 import Payment from '../Pages/Payment';
 import SuccessPay from '../Pages/SuccessPay';
+import Products from '../Pages/Products/Products';
 
     const router = createBrowserRouter([
         {
@@ -21,6 +22,10 @@ import SuccessPay from '../Pages/SuccessPay';
                {
                    index: true,
                    element: <Home />
+               },
+               {
+                   path: "products",
+                   element: <Products />
                },
                {
                    path: "login",

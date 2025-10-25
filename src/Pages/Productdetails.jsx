@@ -10,12 +10,12 @@ const Productdetails = () => {
   const data = useLoaderData();
   const { id } = useParams();
   const { user } = useContext(AuthContext);
-console.log(user);
+  console.log(user);
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
   const [rating, setRating] = useState(null);
   const [reviews, setReviews] = useState([]);
-
+ console.log(product);
   useEffect(() => {
     const founddata = data?.find((p) => p._id === id);
     setProduct(founddata);
@@ -102,7 +102,7 @@ console.log(user);
               {product.images?.map((img, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:3000${img}`}
+                  src={img}
                   alt={`Thumbnail ${index}`}
                   onClick={() => setSelectedImage(index)}
                   className={`w-20 h-20 object-cover rounded-lg border cursor-pointer transition ${
@@ -116,9 +116,9 @@ console.log(user);
             {/* Main Image */}
             <div className="flex-1 flex items-center justify-center">
               <img
-                src={`http://localhost:3000${
+                src={
                   product.images?.[selectedImage] || ""
-                }`}
+                }
                 alt={product.name}
                 className="rounded-lg shadow-lg max-h-[500px] object-contain"
               />
@@ -169,9 +169,7 @@ console.log(user);
 
         {/* RIGHT - Purchase Box */}
         <div className="lg:col-span-3 bg-white p-6 rounded-xl shadow space-y-4 border">
-          <p className="text-3xl font-bold text-blue-600">
-            ${product.price}
-          </p>
+          <p className="text-3xl font-bold text-blue-600">${product.price}</p>
           <p className="text-sm text-gray-500">
             Added on {new Date(product.createdAt).toLocaleDateString()}
           </p>
@@ -199,13 +197,22 @@ console.log(user);
       {/* DETAILS & REVIEWS SECTION */}
       <div className="mt-10 bg-white p-6 rounded-xl shadow">
         <div className="flex gap-6 border-b pb-3 mb-4">
-          <a href="#details" className="font-semibold text-gray-700 hover:text-blue-600">
+          <a
+            href="#details"
+            className="font-semibold text-gray-700 hover:text-blue-600"
+          >
             Product Details
           </a>
-          <a href="#specs" className="font-semibold text-gray-700 hover:text-blue-600">
+          <a
+            href="#specs"
+            className="font-semibold text-gray-700 hover:text-blue-600"
+          >
             Specifications
           </a>
-          <a href="#reviews" className="font-semibold text-gray-700 hover:text-blue-600">
+          <a
+            href="#reviews"
+            className="font-semibold text-gray-700 hover:text-blue-600"
+          >
             Reviews
           </a>
         </div>
@@ -223,7 +230,9 @@ console.log(user);
             <tbody>
               {specifications.map((spec, idx) => (
                 <tr key={idx} className="border-b">
-                  <td className="px-3 py-2 font-medium w-1/3 bg-gray-50">{spec.key}</td>
+                  <td className="px-3 py-2 font-medium w-1/3 bg-gray-50">
+                    {spec.key}
+                  </td>
                   <td className="px-3 py-2">{spec.value}</td>
                 </tr>
               ))}
@@ -236,7 +245,10 @@ console.log(user);
           <h3 className="text-xl font-bold mb-4">Customer Reviews</h3>
 
           {/* Review Form */}
-          <form onSubmit={handleSubmit} className="mb-6 bg-gray-50 p-4 rounded-lg">
+          <form
+            onSubmit={handleSubmit}
+            className="mb-6 bg-gray-50 p-4 rounded-lg"
+          >
             <Rating
               initialRating={rating}
               emptySymbol={<span className="text-gray-300 text-2xl">★</span>}
@@ -273,12 +285,18 @@ console.log(user);
                     className="w-10 h-10 rounded-full border object-cover"
                   />
                   <div>
-                    <h4 className="font-semibold">{review.name || "Anonymous"}</h4>
+                    <h4 className="font-semibold">
+                      {review.name || "Anonymous"}
+                    </h4>
                     <Rating
                       initialRating={review.rating}
                       readonly
-                      emptySymbol={<span className="text-gray-300 text-sm">★</span>}
-                      fullSymbol={<span className="text-yellow-400 text-sm">★</span>}
+                      emptySymbol={
+                        <span className="text-gray-300 text-sm">★</span>
+                      }
+                      fullSymbol={
+                        <span className="text-yellow-400 text-sm">★</span>
+                      }
                     />
                     <p className="text-sm text-gray-600 mt-1">
                       {review.reviewText}
