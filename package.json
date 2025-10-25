@@ -15,7 +15,6 @@
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.11.0",
     "firebase": "^12.1.0",
-    "flowbite": "^3.1.2",
     "framer-motion": "^12.23.12",
     "lottie-react": "^2.4.1",
     "react": "^19.1.1",
@@ -24,6 +23,7 @@
     "react-rating": "^2.0.5",
     "react-router": "^7.8.2",
     "react-toastify": "^11.0.5",
+    "react-tooltip": "^5.30.0",
     "swiper": "^11.2.10",
     "tailwindcss": "^4.1.12"
   },
