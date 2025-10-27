@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 const categoryData = {
-  Electronics: ["Mobiles", "Laptops", "Headphones", "Cameras"],
+  Electronics: ["Mobile", "Laptops", "Headphones", "Cameras"],
   Books: ["Fiction", "Non-fiction", "Comics", "Education"],
   Fashion: ["Men", "Women", "Accessories", "Shoes"],
   Gaming: ["Consoles", "Games", "Accessories"],
@@ -12,8 +12,8 @@ const categoryData = {
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [openCategory, setOpenCategory] = useState(null); // for expanding/collapsing categories
-
+  const [openCategory, setOpenCategory] = useState(null); 
+  const [selectedCategory, setSelectedCategory] = useState(null);
   useEffect(() => {
     axios
       .get("http://localhost:3000/products")
@@ -22,8 +22,27 @@ const Products = () => {
   }, []);
 
   const toggleCategory = (category) => {
+    console.log(category);
     setOpenCategory(openCategory === category ? null : category);
+
   };
+
+  const Selectcat=(sub)=>{
+    console.log(sub.toLowerCase());
+    setSelectedCategory(sub);
+  }
+
+ const handleapply = () => {
+  setProducts([null]);
+  const filtered = products.filter(
+    (p) => p.subcategory.toLowerCase() === selectedCategory.toLowerCase()
+  );
+
+  setProducts(filtered);
+   
+  console.log(filtered);
+};
+
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -47,7 +66,7 @@ const Products = () => {
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => toggleCategory(category)}
-                >
+                >  
                   <span className="font-medium text-gray-700">{category}</span>
                   {openCategory === category ? (
                     <FiMinus className="text-gray-600" />
@@ -65,8 +84,11 @@ const Products = () => {
                   <ul className="pl-4 space-y-1 text-sm text-gray-600">
                     {categoryData[category].map((sub, i) => (
                       <li
+                      onClick={() => Selectcat(sub)}
                         key={i}
-                        className="hover:text-indigo-600 cursor-pointer py-1"
+                        className={`${
+                          selectedCategory === sub ? "bg-blue-600 text-white rounded-lg" : "hover:text-indigo-600"
+                        } cursor-pointer px-2 py-1`}
                       >
                         {sub}
                       </li>
@@ -93,7 +115,7 @@ const Products = () => {
             </ul>
           </div>
 
-          <button className="mt-6 w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">
+          <button onClick={handleapply} className="mt-6 w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">
             Apply Filters
           </button>
         </aside>
