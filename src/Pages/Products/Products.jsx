@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 const categoryData = {
-  Electronics: ["Mobiles", "Laptops", "Headphones", "Cameras"],
+  Electronics: ["Mobile", "Laptops", "Headphones", "Cameras"],
   Books: ["Fiction", "Non-fiction", "Comics", "Education"],
   Fashion: ["Men", "Women", "Accessories", "Shoes"],
   Gaming: ["Consoles", "Games", "Accessories"],
@@ -12,8 +12,8 @@ const categoryData = {
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [openCategory, setOpenCategory] = useState(null); // for expanding/collapsing categories
-
+  const [openCategory, setOpenCategory] = useState(null); 
+  const [selectedCategory, setSelectedCategory] = useState(null);
   useEffect(() => {
     axios
       .get("http://localhost:3000/products")
@@ -22,8 +22,31 @@ const Products = () => {
   }, []);
 
   const toggleCategory = (category) => {
+    console.log(category);
     setOpenCategory(openCategory === category ? null : category);
+
   };
+
+  const Selectcat=(sub)=>{
+    console.log(sub.toLowerCase());
+    setSelectedCategory(sub);
+  }
+
+ const handleapply = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/products");
+    const filtered = res.data.filter(
+      (p) =>
+        p.subcategory?.toLowerCase() === selectedCategory?.toLowerCase()
+    );
+    setProducts(filtered);
+    console.log("Filtered:", filtered);
+  } catch (err) {
+    console.error("Error filtering:", err);
+  }
+};
+
+
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -35,7 +58,7 @@ const Products = () => {
       {/* Main Layout */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Sidebar */}
-        <aside className="md:col-span-1 bg-white rounded-2xl shadow-md p-6 max-h-screen md:sticky top-20">
+        <aside className="md:col-span-1 bg-white rounded-2xl shadow-md p-6 h-fit md:sticky top-20">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
             Filters
           </h2>
@@ -47,7 +70,7 @@ const Products = () => {
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => toggleCategory(category)}
-                >
+                >  
                   <span className="font-medium text-gray-700">{category}</span>
                   {openCategory === category ? (
                     <FiMinus className="text-gray-600" />
@@ -65,8 +88,11 @@ const Products = () => {
                   <ul className="pl-4 space-y-1 text-sm text-gray-600">
                     {categoryData[category].map((sub, i) => (
                       <li
+                      onClick={() => Selectcat(sub)}
                         key={i}
-                        className="hover:text-indigo-600 cursor-pointer py-1"
+                        className={`${
+                          selectedCategory === sub ? "bg-blue-600 text-white rounded-lg" : "hover:text-indigo-600"
+                        } cursor-pointer px-2 py-1`}
                       >
                         {sub}
                       </li>
@@ -81,19 +107,50 @@ const Products = () => {
           <div className="mt-6">
             <h3 className="font-medium text-gray-700 mb-2">Price Range</h3>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li className="hover:text-indigo-600 cursor-pointer">
-                Under $50
+              <li className="flex items-center">
+                <input
+                 // checked
+                  id="default-radio-2"
+                  type="radio"
+                  value=""
+                  name="default-radio"
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
+                />
+                <label htmlFor="default-radio-2" className="ml-2">
+                  Under $50
+                </label>
               </li>
-              <li className="hover:text-indigo-600 cursor-pointer">
-                $50 - $200
+             
+              <li className="flex items-center hover:text-indigo-600 cursor-pointer">
+                <input
+                 // checked
+                  id="default-radio-3"
+                  type="radio"
+                  value=""
+                  name="default-radio"
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
+                />
+                <label htmlFor="default-radio-3" className="ml-2">
+                  $50 - $200
+                </label>
               </li>
-              <li className="hover:text-indigo-600 cursor-pointer">
-                Above $200
+              <li className="flex items-center hover:text-indigo-600 cursor-pointer">
+                <input
+                 // checked
+                  id="default-radio-4"
+                  type="radio"
+                  value=""
+                  name="default-radio"
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
+                />
+                <label htmlFor="default-radio-4" className="ml-2">
+                  Above $200
+                </label>
               </li>
             </ul>
           </div>
 
-          <button className="mt-6 w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">
+          <button onClick={handleapply} className="mt-6 w-full bg-indigo-500 text-sm md:text-base text-white py-2 rounded-lg hover:bg-indigo-600 transition">
             Apply Filters
           </button>
         </aside>
