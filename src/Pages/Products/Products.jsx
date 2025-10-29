@@ -14,6 +14,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [openCategory, setOpenCategory] = useState(null); 
   const [selectedCategory, setSelectedCategory] = useState(null);
+   const [selectedPrice, setSelectedPrice] = useState("");
   useEffect(() => {
     axios
       .get("http://localhost:3000/products")
@@ -37,14 +38,33 @@ const Products = () => {
     const res = await axios.get("http://localhost:3000/products");
     const filtered = res.data.filter(
       (p) =>
-        p.subcategory?.toLowerCase() === selectedCategory?.toLowerCase()
+        p.subcategory?.toLowerCase() === selectedCategory?.toLowerCase() 
+       
     );
+    if (selectedPrice) {
+      const filtered = res.data.filter((p) => {
+        const price = Number(p.price);
+        if (selectedPrice === "under50") return price < 50;
+        if (selectedPrice === "50to200") return price >= 50 && price <= 200;
+        if (selectedPrice === "above200") return price > 200;
+         return true;
+      });
+    }
     setProducts(filtered);
     console.log("Filtered:", filtered);
   } catch (err) {
     console.error("Error filtering:", err);
   }
 };
+
+const handleradio=(e)=>{
+  setSelectedPrice(e.target.value);
+  console.log("selected price", e.target.value);
+}
+
+
+
+
 
 
 
@@ -110,9 +130,10 @@ const Products = () => {
               <li className="flex items-center">
                 <input
                  // checked
+                 onChange={handleradio}
                   id="default-radio-2"
                   type="radio"
-                  value=""
+                  value="under50"
                   name="default-radio"
                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
                 />
@@ -124,9 +145,10 @@ const Products = () => {
               <li className="flex items-center hover:text-indigo-600 cursor-pointer">
                 <input
                  // checked
+                  onChange={handleradio}
                   id="default-radio-3"
                   type="radio"
-                  value=""
+                  value="50to200"
                   name="default-radio"
                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
                 />
@@ -137,15 +159,16 @@ const Products = () => {
               <li className="flex items-center hover:text-indigo-600 cursor-pointer">
                 <input
                  // checked
+                  onChange={handleradio}
                   id="default-radio-4"
                   type="radio"
-                  value=""
+                  value="above200"
                   name="default-radio"
                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
                 />
                 <label htmlFor="default-radio-4" className="ml-2">
                   Above $200
-                </label>
+                </label> 
               </li>
             </ul>
           </div>
