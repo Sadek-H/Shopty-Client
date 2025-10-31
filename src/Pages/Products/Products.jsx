@@ -8,19 +8,41 @@ const categoryData = {
   Books: ["Fiction", "Non-fiction", "Comics", "Education"],
   Fashion: ["Men", "Women", "Accessories", "Shoes"],
   Gaming: ["Consoles", "Games", "Accessories"],
+
 };
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [subcategory, setSubcategory] = useState([]);
+  console.log(subcategory);
   const [openCategory, setOpenCategory] = useState(null); 
   const [selectedCategory, setSelectedCategory] = useState(null);
    const [selectedPrice, setSelectedPrice] = useState("");
   useEffect(() => {
     axios
       .get("http://localhost:3000/products")
-      .then((response) => setProducts(response.data))
+      .then((response) => {
+        setProducts(response.data);
+      })
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
+
+  useEffect(()=>{
+   axios.get("http://localhost:3000/subcategories")
+   .then((res)=>{
+    if(res.data.length==0){
+       axios.post("http://localhost:3000/subcategories",categoryData)
+    .then((res)=>{
+      setSubcategory(Object.entries(res.data));
+      console.log("subcategory", res.data);
+    })
+    }
+    else{
+      const cat = Object.keys(res.data).filter(k=> k !== "_id")
+      setSubcategory(cat);
+    }
+   })
+  },[])
 
   const toggleCategory = (category) => {
     console.log(category);
@@ -63,11 +85,6 @@ const handleradio=(e)=>{
 }
 
 
-
-
-
-
-
   return (
     <div className="container mx-auto px-4 py-10">
       {/* Page Title */}
@@ -85,7 +102,7 @@ const handleradio=(e)=>{
 
           {/* Category Accordion */}
           <div className="space-y-4">
-            {Object.keys(categoryData).map((category, idx) => (
+            {subcategory.map((category, idx) => (
               <div key={idx} className=" pb-2">
                 <div
                   className="flex justify-between items-center cursor-pointer"
@@ -98,7 +115,7 @@ const handleradio=(e)=>{
                     <FiPlus className="text-gray-600" />
                   )}
                 </div>
-
+ 
                 {/* Subcategories */}
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${

@@ -3,6 +3,7 @@ import { NavLink } from "react-router";
 import { AuthContext } from "../Auth/AuthProvider";
 import { toast } from "react-toastify";
 
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user , signout } = useContext(AuthContext);
@@ -14,6 +15,8 @@ const Navbar = () => {
      })
      setIsOpen(false);
   }
+
+
   return (
     <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <nav className="container mx-auto px-4">
@@ -51,6 +54,7 @@ const Navbar = () => {
             {/* Search Bar */}
             <div className="relative w-40 sm:w-56">
               <input
+               
                 type="text"
                 placeholder="Search..."
                 className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl 
