@@ -8,91 +8,84 @@ const categoryData = {
   Books: ["Fiction", "Non-fiction", "Comics", "Education"],
   Fashion: ["Men", "Women", "Accessories", "Shoes"],
   Gaming: ["Consoles", "Games", "Accessories"],
-
 };
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [subcategory, setSubcategory] = useState([]);
-  console.log(subcategory);
-  const [openCategory, setOpenCategory] = useState(null); 
-  const [selectedCategory, setSelectedCategory] = useState(null);
-   const [selectedPrice, setSelectedPrice] = useState("");
+  const [subcategory, setSubcategory] = useState({});
+  const [openCategory, setOpenCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState("");
+
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/products")
-      .then((response) => {
-        setProducts(response.data);
-      })
-      .catch((error) => console.error("Error fetching products:", error));
+    axios.get("http://localhost:3000/subcategories").then((res) => {
+      if (res.data.length === 0) {
+        axios
+          .post("http://localhost:3000/subcategories", categoryData)
+          .then((res) => setSubcategory(res.data));
+      } else {
+        const { _id, ...rest } = res.data;
+        setSubcategory(rest);
+      }
+    });
   }, []);
 
-  useEffect(()=>{
-   axios.get("http://localhost:3000/subcategories")
-   .then((res)=>{
-    if(res.data.length==0){
-       axios.post("http://localhost:3000/subcategories",categoryData)
-    .then((res)=>{
-      setSubcategory(Object.entries(res.data));
-      console.log("subcategory", res.data);
-    })
-    }
-    else{
-      const cat = Object.keys(res.data).filter(k=> k !== "_id")
-      setSubcategory(cat);
-    }
-   })
-  },[])
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sub = params.get("subcategory");
+    const price = params.get("price");
 
+    if (sub) setSelectedCategory(sub);
+    if (price) setSelectedPrice(price);
+
+    axios
+      .get("http://localhost:3000/products", {
+        params: { subcategory: sub || "", price: price || "" },
+      })
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  
   const toggleCategory = (category) => {
-    console.log(category);
     setOpenCategory(openCategory === category ? null : category);
-
   };
 
-  const Selectcat=(sub)=>{
-    console.log(sub.toLowerCase());
+  
+  const selectCategory = (sub) => {
     setSelectedCategory(sub);
-  }
+  };
 
- const handleapply = async () => {
-  try {
-    const res = await axios.get("http://localhost:3000/products");
-    const filtered = res.data.filter(
-      (p) =>
-        p.subcategory?.toLowerCase() === selectedCategory?.toLowerCase() 
-       
-    );
-    if (selectedPrice) {
-      const filtered = res.data.filter((p) => {
-        const price = Number(p.price);
-        if (selectedPrice === "under50") return price < 50;
-        if (selectedPrice === "50to200") return price >= 50 && price <= 200;
-        if (selectedPrice === "above200") return price > 200;
-         return true;
-      });
+  
+  const handlePriceChange = (e) => {
+    setSelectedPrice(e.target.value);
+  };
+
+ 
+  const handleApply = async () => {
+    try {
+      const params = {};
+      if (selectedCategory) params.subcategory = selectedCategory;
+      if (selectedPrice) params.price = selectedPrice;
+
+      const res = await axios.get("http://localhost:3000/products", { params });
+      setProducts(res.data);
+
+      // Update URL so filters persist after reload
+      const queryString = new URLSearchParams(params).toString();
+      window.history.pushState({}, "", `?${queryString}`);
+    } catch (err) {
+      console.error("Error applying filters:", err);
     }
-    setProducts(filtered);
-    console.log("Filtered:", filtered);
-  } catch (err) {
-    console.error("Error filtering:", err);
-  }
-};
-
-const handleradio=(e)=>{
-  setSelectedPrice(e.target.value);
-  console.log("selected price", e.target.value);
-}
-
+  };
 
   return (
     <div className="container mx-auto px-4 py-10">
-      {/* Page Title */}
       <h1 className="text-2xl font-bold text-center mb-8 text-gray-800">
         Our Products
       </h1>
 
-      {/* Main Layout */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Sidebar */}
         <aside className="md:col-span-1 bg-white rounded-2xl shadow-md p-6 h-fit md:sticky top-20">
@@ -100,36 +93,33 @@ const handleradio=(e)=>{
             Filters
           </h2>
 
-          {/* Category Accordion */}
+          {/* Categories */}
           <div className="space-y-4">
-            {subcategory.map((category, idx) => (
-              <div key={idx} className=" pb-2">
+            {Object.keys(subcategory).map((category, idx) => (
+              <div key={idx} className="pb-2">
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => toggleCategory(category)}
-                >  
+                >
                   <span className="font-medium text-gray-700">{category}</span>
-                  {openCategory === category ? (
-                    <FiMinus className="text-gray-600" />
-                  ) : (
-                    <FiPlus className="text-gray-600" />
-                  )}
+                  {openCategory === category ? <FiMinus /> : <FiPlus />}
                 </div>
- 
-                {/* Subcategories */}
+
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     openCategory === category ? "max-h-40 mt-2" : "max-h-0"
                   }`}
                 >
                   <ul className="pl-4 space-y-1 text-sm text-gray-600">
-                    {categoryData[category].map((sub, i) => (
+                    {(subcategory[category] || []).map((sub, i) => (
                       <li
-                      onClick={() => Selectcat(sub)}
                         key={i}
                         className={`${
-                          selectedCategory === sub ? "bg-blue-600 text-white rounded-lg" : "hover:text-indigo-600"
+                          selectedCategory === sub
+                            ? "bg-blue-600 text-white rounded-lg"
+                            : "hover:text-indigo-600"
                         } cursor-pointer px-2 py-1`}
+                        onClick={() => selectCategory(sub)}
                       >
                         {sub}
                       </li>
@@ -140,57 +130,35 @@ const handleradio=(e)=>{
             ))}
           </div>
 
-          {/* Example Static Sections */}
+          {/* Price */}
           <div className="mt-6">
             <h3 className="font-medium text-gray-700 mb-2">Price Range</h3>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center">
-                <input
-                 // checked
-                 onChange={handleradio}
-                  id="default-radio-2"
-                  type="radio"
-                  value="under50"
-                  name="default-radio"
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
-                />
-                <label htmlFor="default-radio-2" className="ml-2">
-                  Under $50
-                </label>
-              </li>
-             
-              <li className="flex items-center hover:text-indigo-600 cursor-pointer">
-                <input
-                 // checked
-                  onChange={handleradio}
-                  id="default-radio-3"
-                  type="radio"
-                  value="50to200"
-                  name="default-radio"
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
-                />
-                <label htmlFor="default-radio-3" className="ml-2">
-                  $50 - $200
-                </label>
-              </li>
-              <li className="flex items-center hover:text-indigo-600 cursor-pointer">
-                <input
-                 // checked
-                  onChange={handleradio}
-                  id="default-radio-4"
-                  type="radio"
-                  value="above200"
-                  name="default-radio"
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 "
-                />
-                <label htmlFor="default-radio-4" className="ml-2">
-                  Above $200
-                </label> 
-              </li>
+              {["under50", "50to200", "above200"].map((priceRange) => (
+                <li key={priceRange} className="flex items-center">
+                  <input
+                    type="radio"
+                    value={priceRange}
+                    checked={selectedPrice === priceRange}
+                    onChange={handlePriceChange}
+                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  />
+                  <label className="ml-2">
+                    {priceRange === "under50"
+                      ? "Under $50"
+                      : priceRange === "50to200"
+                      ? "$50 - $200"
+                      : "Above $200"}
+                  </label>
+                </li>
+              ))}
             </ul>
           </div>
 
-          <button onClick={handleapply} className="mt-6 w-full bg-indigo-500 text-sm md:text-base text-white py-2 rounded-lg hover:bg-indigo-600 transition">
+          <button
+            onClick={handleApply}
+            className="mt-6 w-full bg-indigo-500 text-sm md:text-base text-white py-2 rounded-lg hover:bg-indigo-600 transition"
+          >
             Apply Filters
           </button>
         </aside>
@@ -201,9 +169,9 @@ const handleradio=(e)=>{
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((p, idx) => (
+              {products.map((p) => (
                 <div
-                  key={idx}
+                  key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
                 >
                   <div className="relative">
@@ -216,7 +184,6 @@ const handleradio=(e)=>{
                       New
                     </span>
                   </div>
-
                   <div className="p-5 flex flex-col">
                     <h2 className="font-semibold text-lg text-gray-900 truncate">
                       {p.name}
@@ -224,13 +191,9 @@ const handleradio=(e)=>{
                     <p className="text-gray-500 text-sm mt-1 line-clamp-2">
                       {p.description || "No description available."}
                     </p>
-
                     <div className="mt-3 flex items-center justify-between">
-                      <p className="text-xl font-bold text-indigo-600">
-                        ${p.price}
-                      </p>
+                      <p className="text-xl font-bold text-indigo-600">${p.price}</p>
                     </div>
-
                     <div className="flex gap-3 mt-5">
                       <button className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg font-medium hover:opacity-90 transition">
                         Add to Cart
