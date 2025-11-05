@@ -30,7 +30,6 @@ const Products = () => {
     });
   }, []);
 
-  
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sub = params.get("subcategory");
@@ -47,22 +46,18 @@ const Products = () => {
       .catch((err) => console.error(err));
   }, []);
 
-  
   const toggleCategory = (category) => {
     setOpenCategory(openCategory === category ? null : category);
   };
 
-  
   const selectCategory = (sub) => {
     setSelectedCategory(sub);
   };
 
-  
   const handlePriceChange = (e) => {
     setSelectedPrice(e.target.value);
   };
 
- 
   const handleApply = async () => {
     try {
       const params = {};
@@ -192,7 +187,9 @@ const Products = () => {
                       {p.description || "No description available."}
                     </p>
                     <div className="mt-3 flex items-center justify-between">
-                      <p className="text-xl font-bold text-indigo-600">${p.price}</p>
+                      <p className="text-xl font-bold text-indigo-600">
+                        ${p.price}
+                      </p>
                     </div>
                     <div className="flex gap-3 mt-5">
                       <button className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg font-medium hover:opacity-90 transition">
