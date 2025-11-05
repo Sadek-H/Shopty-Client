@@ -3,19 +3,16 @@ import { NavLink } from "react-router";
 import { AuthContext } from "../Auth/AuthProvider";
 import { toast } from "react-toastify";
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user , signout } = useContext(AuthContext);
+  const { user, signout } = useContext(AuthContext);
   console.log(user);
-  const handleLogout = ()=>{
-     signout()
-     .then(()=>{
-       toast.success("Logged out successfully"); 
-     })
-     setIsOpen(false);
-  }
-
+  const handleLogout = () => {
+    signout().then(() => {
+      toast.success("Logged out successfully");
+    });
+    setIsOpen(false);
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -54,7 +51,6 @@ const Navbar = () => {
             {/* Search Bar */}
             <div className="relative w-40 sm:w-56">
               <input
-               
                 type="text"
                 placeholder="Search..."
                 className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl 
@@ -77,35 +73,39 @@ const Navbar = () => {
 
             {/* Desktop Login/Register */}
             <div className="hidden lg:flex gap-3">
-             {
-              user ? 
-              <>
-              <img className="w-8 h-8 rounded-full" src={user?.photoURL} alt="" />
-              <NavLink
-                onClick={handleLogout}
-                className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 
+              {user ? (
+                <>
+                  <img
+                    className="w-8 h-8 rounded-full"
+                    src={user?.photoURL}
+                    alt=""
+                  />
+                  <NavLink
+                    onClick={handleLogout}
+                    className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 
                 rounded-xl hover:bg-blue-50 shadow-sm transition"
-              >
-                Logout
-              </NavLink>
-              </> :
-              <>
-               <NavLink
-                to="/login"
-                className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 
+                  >
+                    Logout
+                  </NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 
                 rounded-xl shadow hover:scale-105 transform transition"
-              >
-                Login
-              </NavLink>
-              <NavLink
-                to="/register"
-                className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 
+                  >
+                    Login
+                  </NavLink>
+                  <NavLink
+                    to="/register"
+                    className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 
                 rounded-xl hover:bg-blue-50 shadow-sm transition"
-              >
-                Register
-              </NavLink>
-              </>
-             }
+                  >
+                    Register
+                  </NavLink>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -175,35 +175,39 @@ const Navbar = () => {
 
             {/* Mobile Login/Register */}
             <li className="flex gap-2 mt-2 w-max">
-           {
-            user ? 
-            <>
-             <img className="w-8 h-8 rounded-full" src={user.photoURL} alt="" />
-              <NavLink
-                 to="/login"
-                className="flex-1 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 shadow-sm transition"
-                onClick={handleLogout}
-              >
-                Logout
-              </NavLink>
-            </> :
-            <>
-              <NavLink              
-                to="/login"
-                className="flex-1 px-4 py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow hover:scale-105 transform transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </NavLink>
-              <NavLink
-                to="/register"
-                className="flex-1 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 shadow-sm transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Register
-              </NavLink>
-            </>
-           }
+              {user ? (
+                <>
+                  <img
+                    className="w-8 h-8 rounded-full"
+                    src={user.photoURL}
+                    alt=""
+                  />
+                  <NavLink
+                    to="/login"
+                    className="flex-1 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 shadow-sm transition"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className="flex-1 px-4 py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow hover:scale-105 transform transition"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </NavLink>
+                  <NavLink
+                    to="/register"
+                    className="flex-1 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 shadow-sm transition"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Register
+                  </NavLink>
+                </>
+              )}
             </li>
           </ul>
         </div>
