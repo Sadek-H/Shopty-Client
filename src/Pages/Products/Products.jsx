@@ -25,6 +25,7 @@ const Products = () => {
           .then((res) => setSubcategory(res.data));
       } else {
         const { _id, ...rest } = res.data;
+        console.log(rest);
         setSubcategory(rest);
       }
     });
@@ -42,7 +43,10 @@ const Products = () => {
       .get("http://localhost:3000/products", {
         params: { subcategory: sub || "", price: price || "" },
       })
-      .then((res) => setProducts(res.data))
+      .then((res) => {
+        setProducts(res.data);
+        setTotalPages(Math.ceil(res.data.length / itemsPerPage));
+      })
       .catch((err) => console.error(err));
   }, []);
 
@@ -51,6 +55,7 @@ const Products = () => {
   };
 
   const selectCategory = (sub) => {
+    console.log(sub);
     setSelectedCategory(sub);
   };
 
@@ -65,6 +70,7 @@ const Products = () => {
       if (selectedPrice) params.price = selectedPrice;
 
       const res = await axios.get("http://localhost:3000/products", { params });
+      console.log(res);
       setProducts(res.data);
 
       // Update URL so filters persist after reload
@@ -73,6 +79,20 @@ const Products = () => {
     } catch (err) {
       console.error("Error applying filters:", err);
     }
+  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 3;
+  const indexofLastitem = currentPage * itemsPerPage;
+  const indexofFirstitem = indexofLastitem - itemsPerPage;
+  const currentItems = products.slice(
+    indexofFirstitem,
+    indexofLastitem
+  );
+  console.log(currentItems);
+  const handlepage = (idx) => {
+    console.log(idx + 1);
+    setCurrentPage(idx + 1);
   };
 
   return (
@@ -164,7 +184,7 @@ const Products = () => {
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((p) => (
+              {currentItems.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
@@ -207,6 +227,18 @@ const Products = () => {
               ))}
             </div>
           )}
+          {/* pagination */}
+          <div className="flex justify-center mt-8 space-x-2">
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => handlepage(idx)}
+                className=" bg-gray-300 px-4 py-2 m-2 rounded-lg hover:bg-gray-400 transition"
+              >
+                {idx + 1}
+              </button>
+            ))}
+          </div>
         </main>
       </div>
     </div>
