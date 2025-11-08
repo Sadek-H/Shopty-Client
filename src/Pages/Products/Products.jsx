@@ -16,7 +16,11 @@ const Products = () => {
   const [openCategory, setOpenCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
-
+  const params = new URLSearchParams(window.location.search);
+const initialPage = parseInt(params.get("page")) || 1;
+const [currentPage, setCurrentPage] = useState(initialPage);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 3;
   useEffect(() => {
     axios.get("http://localhost:3000/subcategories").then((res) => {
       if (res.data.length === 0) {
@@ -31,24 +35,34 @@ const Products = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const sub = params.get("subcategory");
-    const price = params.get("price");
+  const fetchProducts = async (page = 1) => {
+  const skip = (page - 1) * itemsPerPage;
+  const params = {
+    subcategory: selectedCategory || "",
+    price: selectedPrice || "",
+    skip,
+    limit: itemsPerPage,
+  };
 
-    if (sub) setSelectedCategory(sub);
-    if (price) setSelectedPrice(price);
+  try {
+    const res = await axios.get("http://localhost:3000/products", { params });
+    setProducts(res.data.result);
+    setTotalPages(Math.ceil(res.data.totalcount / itemsPerPage));
+  } catch (err) {
+    console.error("Error fetching products:", err);
+  }
+};
 
-    axios
-      .get("http://localhost:3000/products", {
-        params: { subcategory: sub || "", price: price || "" },
-      })
-      .then((res) => {
-        setProducts(res.data);
-        setTotalPages(Math.ceil(res.data.length / itemsPerPage));
-      })
-      .catch((err) => console.error(err));
-  }, []);
+ useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const sub = params.get("subcategory");
+  const price = params.get("price");
+  console.log(price);
+  if (sub) setSelectedCategory(sub);
+  if (price) setSelectedPrice(price);
+
+  fetchProducts(currentPage);
+}, [currentPage]);
 
   const toggleCategory = (category) => {
     setOpenCategory(openCategory === category ? null : category);
@@ -63,38 +77,51 @@ const Products = () => {
     setSelectedPrice(e.target.value);
   };
 
-  const handleApply = async () => {
-    try {
-      const params = {};
-      if (selectedCategory) params.subcategory = selectedCategory;
-      if (selectedPrice) params.price = selectedPrice;
+ const handleApply = async () => {
+  try {
+    const params = {};
+    if (selectedCategory) params.subcategory = selectedCategory;
+    if (selectedPrice) params.price = selectedPrice;
 
-      const res = await axios.get("http://localhost:3000/products", { params });
-      console.log(res);
-      setProducts(res.data);
+    const res = await axios.get("http://localhost:3000/products", { params });
+    setProducts(res.data.result);
+    setTotalPages(Math.ceil(res.data.totalcount / itemsPerPage));
+    setCurrentPage(1); // reset to first page
 
-      // Update URL so filters persist after reload
-      const queryString = new URLSearchParams(params).toString();
-      window.history.pushState({}, "", `?${queryString}`);
-    } catch (err) {
-      console.error("Error applying filters:", err);
-    }
-  };
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const itemsPerPage = 3;
-  const indexofLastitem = currentPage * itemsPerPage;
-  const indexofFirstitem = indexofLastitem - itemsPerPage;
-  const currentItems = products.slice(
-    indexofFirstitem,
-    indexofLastitem
-  );
-  console.log(currentItems);
+    // Update URL so filters persist
+    const queryString = new URLSearchParams(params).toString();
+    window.history.pushState({}, "", `?${queryString}`);
+  } catch (err) {
+    console.error("Error applying filters:", err);
+  }
+};
+
+
+
+  // const indexofLastitem = currentPage * itemsPerPage;
+  // const indexofFirstitem = indexofLastitem - itemsPerPage;
+  // const currentItems = products.slice(
+  //   indexofFirstitem,
+  //   indexofLastitem
+  // );
+  // console.log(currentItems);
+
   const handlepage = (idx) => {
     console.log(idx + 1);
-    setCurrentPage(idx + 1);
+    const page = idx + 1;
+    setCurrentPage(page);
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", page);
+    window.history.pushState({}, "", `?${params.toString()}`);
+    fetchProducts(page);
   };
-
+ 
+const handleAll=()=>{
+  setSelectedCategory("");
+  setSelectedPrice("");
+  fetchProducts(1);
+  window.history.pushState({}, "", `/products`);
+}
   return (
     <div className="container mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-center mb-8 text-gray-800">
@@ -110,6 +137,7 @@ const Products = () => {
 
           {/* Categories */}
           <div className="space-y-4">
+            <button onClick={()=>handleAll()} className="font-medium text-gray-700">All</button>
             {Object.keys(subcategory).map((category, idx) => (
               <div key={idx} className="pb-2">
                 <div
@@ -184,7 +212,7 @@ const Products = () => {
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentItems.map((p) => (
+              {products.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
