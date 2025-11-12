@@ -1,11 +1,14 @@
 import React, { useContext, useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate, useNavigation } from "react-router";
 import { AuthContext } from "../Auth/AuthProvider";
 import { toast } from "react-toastify";
+import { Globalsearchcontext } from "../Pages/Globalsearchprovider";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signout } = useContext(AuthContext);
+  const {query, setQuery} = useContext(Globalsearchcontext);
+  const navigate = useNavigate();
   console.log(user);
   const handleLogout = () => {
     signout().then(() => {
@@ -13,6 +16,10 @@ const Navbar = () => {
     });
     setIsOpen(false);
   };
+  const handlesearch = (e) =>{
+    setQuery(e.target.value);
+    navigate(`/products?search=${query}`)
+  }
 
   return (
     <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -51,6 +58,8 @@ const Navbar = () => {
             {/* Search Bar */}
             <div className="relative w-40 sm:w-56">
               <input
+               onChange={handlesearch}
+               value={query}
                 type="text"
                 placeholder="Search..."
                 className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl 

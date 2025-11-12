@@ -1,7 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { FiPlus, FiMinus } from "react-icons/fi";
+import { Globalsearchcontext } from "../Globalsearchprovider";
 
 const categoryData = {
   Electronics: ["Mobile", "Laptops", "Headphones", "Cameras"],
@@ -21,6 +22,12 @@ const initialPage = parseInt(params.get("page")) || 1;
 const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 3;
+  const {query} = useContext(Globalsearchcontext);
+
+const filtersearch = products.filter((p)=>
+  p.name.toLowerCase().includes(query.toLowerCase())
+)
+
   useEffect(() => {
     axios.get("http://localhost:3000/subcategories").then((res) => {
       if (res.data.length === 0) {
@@ -137,7 +144,7 @@ const handleAll=()=>{
 
           {/* Categories */}
           <div className="space-y-4">
-            <button onClick={()=>handleAll()} className="font-medium text-gray-700">All</button>
+            <button onClick={handleAll} className="font-medium text-gray-700 hover:text-indigo-600">All</button>
             {Object.keys(subcategory).map((category, idx) => (
               <div key={idx} className="pb-2">
                 <div
@@ -208,11 +215,11 @@ const handleAll=()=>{
 
         {/* Product Grid */}
         <main className="md:col-span-3">
-          {products.length === 0 ? (
+          {query?filtersearch : products.length === 0 ? (
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((p) => (
+              {query?filtersearch : products.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
