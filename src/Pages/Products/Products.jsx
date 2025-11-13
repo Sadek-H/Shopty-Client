@@ -23,10 +23,9 @@ const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 3;
   const {query} = useContext(Globalsearchcontext);
+ 
 
-const filtersearch = products.filter((p)=>
-  p.name.toLowerCase().includes(query.toLowerCase())
-)
+
 
   useEffect(() => {
     axios.get("http://localhost:3000/subcategories").then((res) => {
@@ -49,6 +48,7 @@ const filtersearch = products.filter((p)=>
     price: selectedPrice || "",
     skip,
     limit: itemsPerPage,
+    search: query || "",
   };
 
   try {
@@ -69,7 +69,7 @@ const filtersearch = products.filter((p)=>
   if (price) setSelectedPrice(price);
 
   fetchProducts(currentPage);
-}, [currentPage]);
+}, [currentPage,query]);
 
   const toggleCategory = (category) => {
     setOpenCategory(openCategory === category ? null : category);
@@ -91,6 +91,7 @@ const filtersearch = products.filter((p)=>
     if (selectedPrice) params.price = selectedPrice;
 
     const res = await axios.get("http://localhost:3000/products", { params });
+    console.log(res.data);
     setProducts(res.data.result);
     setTotalPages(Math.ceil(res.data.totalcount / itemsPerPage));
     setCurrentPage(1); // reset to first page
@@ -215,11 +216,11 @@ const handleAll=()=>{
 
         {/* Product Grid */}
         <main className="md:col-span-3">
-          {query?filtersearch : products.length === 0 ? (
+          { products.length === 0 ? (
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {query?filtersearch : products.map((p) => (
+              { products.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
