@@ -45,6 +45,7 @@ const Login = () => {
             email: res.user.email,
             name: res.user.displayName,
             photo: res.user.photoURL,
+            role: "user"
           })
           .then((res) => {
             if (res.data.success) {

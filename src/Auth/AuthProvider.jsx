@@ -3,11 +3,13 @@ import React, { createContext, useEffect, useState } from 'react';
 //import { auth } from './firebaseconfig';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { auth } from './firebaseconfig';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 const provider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState();
+    const [role, setRole] = useState();
     const createUser = (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password);
     };
@@ -38,6 +40,14 @@ const AuthProvider = ({ children }) => {
         return sendPasswordResetEmail(auth, email);
     };
 
+    useEffect(()=>{
+        axios.get(`http://localhost:3000/users/${user?.email}`)
+        .then((res)=>{
+            console.log(res.data.role);
+            setRole(res.data.role);
+        })
+    })
+
     const authdata = {
         createUser,
         setUser,
@@ -46,7 +56,8 @@ const AuthProvider = ({ children }) => {
         signout,
         resetPassword,
         signInWithGoogle,
-        updateuser
+        updateuser,
+        role
     };
 
     return (

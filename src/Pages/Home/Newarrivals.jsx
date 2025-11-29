@@ -9,9 +9,9 @@ const Newarrivals = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:3000/products");
-        console.log(response.data.result);
+        console.log(response.data);
         // Sort by createdAt (newest first)
-        const sorted = response.data.result.sort(
+        const sorted = response.data.product.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         console.log(sorted);

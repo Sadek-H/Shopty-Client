@@ -34,7 +34,7 @@ const [currentPage, setCurrentPage] = useState(initialPage);
           .post("http://localhost:3000/subcategories", categoryData)
           .then((res) => setSubcategory(res.data));
       } else {
-        const { _id, ...rest } = res.data;
+        const { _id, ...rest } = res.data[0];
         console.log(rest);
         setSubcategory(rest);
       }
@@ -53,7 +53,7 @@ const [currentPage, setCurrentPage] = useState(initialPage);
 
   try {
     const res = await axios.get("http://localhost:3000/products", { params });
-    setProducts(res.data.result);
+    setProducts(res.data.product);
     setTotalPages(Math.ceil(res.data.totalcount / itemsPerPage));
   } catch (err) {
     console.error("Error fetching products:", err);
@@ -81,6 +81,7 @@ const [currentPage, setCurrentPage] = useState(initialPage);
   };
 
   const handlePriceChange = (e) => {
+    console.log(e.target.value);
     setSelectedPrice(e.target.value);
   };
 
@@ -91,8 +92,8 @@ const [currentPage, setCurrentPage] = useState(initialPage);
     if (selectedPrice) params.price = selectedPrice;
 
     const res = await axios.get("http://localhost:3000/products", { params });
-    console.log(res.data);
-    setProducts(res.data.result);
+    console.log(res.data.product);
+    setProducts(res.data.product);
     setTotalPages(Math.ceil(res.data.totalcount / itemsPerPage));
     setCurrentPage(1); // reset to first page
 
@@ -220,7 +221,7 @@ const handleAll=()=>{
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              { products.map((p) => (
+              {products.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
