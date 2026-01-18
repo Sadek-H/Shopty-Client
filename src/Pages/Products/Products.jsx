@@ -16,7 +16,8 @@ const Products = () => {
   const [openCategory, setOpenCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
-
+ console.log(subcategory);
+ console.log(products);
   useEffect(() => {
     axios.get("http://localhost:3000/subcategories").then((res) => {
       if (res.data.length === 0) {
@@ -24,7 +25,7 @@ const Products = () => {
           .post("http://localhost:3000/subcategories", categoryData)
           .then((res) => setSubcategory(res.data));
       } else {
-        const { _id, ...rest } = res.data;
+        const { _id, ...rest } = res.data[0];
         setSubcategory(rest);
       }
     });
@@ -164,7 +165,7 @@ const Products = () => {
             <p className="text-center text-gray-500">No products available.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((p) => (
+              {products.product.map((p) => (
                 <div
                   key={p._id}
                   className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"

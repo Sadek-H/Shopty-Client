@@ -17,7 +17,7 @@ const Productdetails = () => {
   const [reviews, setReviews] = useState([]);
  console.log(product);
   useEffect(() => {
-    const founddata = data?.find((p) => p._id === id);
+    const founddata = data?.find((p) => p._id = id);
     setProduct(founddata);
   }, [data, id]);
 

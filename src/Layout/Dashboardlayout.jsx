@@ -6,17 +6,20 @@ import { ToastContainer } from "react-toastify";
 import { FaHome, FaBox, FaClipboardList, FaUserShield, FaUserPlus, FaPlus, FaUsers, FaTools, FaMotorcycle } from "react-icons/fa";
 
 const Dashlayout = () => {
-  const [isOpen, setIsOpen] = useState(false); // mobile drawer
+  const [isOpen, setIsOpen] = useState(false); 
   const { user } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/users").then((res) => {
-      if (res.data) setUsers(res.data);
+    axios.get(`http://localhost:3000/users/${user?.email}`).then((res) => {
+      if (res.data) {
+        setUsers(res.data);
+        console.log(res.data);
+      };
     });
-  }, []);
+  }, [user?.email]);
 
-  const currentUser = users.find((u) => u.email === user?.email);
+  //const currentUser = users.find((u) => u.email === user?.email);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -94,7 +97,7 @@ const Dashlayout = () => {
             {/* Sidebar content */}
             <ul className="menu space-y-2 mt-10 md:mt-0">
               {/* User */}
-              {currentUser?.role === "user" && (
+              {users?.role === "user" && (
                 <>
                   <li>
                     <NavLink to="/" className="flex items-center gap-2"><FaHome /> Home</NavLink>
@@ -115,7 +118,7 @@ const Dashlayout = () => {
               )}
 
               {/* Vendor */}
-              {currentUser?.role === "vendor" && (
+              {users?.role === "vendor" && (
                 <>
                   <li>
                     <NavLink to="/" className="flex items-center gap-2"><FaHome /> Home</NavLink>
@@ -136,7 +139,7 @@ const Dashlayout = () => {
               )}
 
               {/* Admin */}
-              {currentUser?.role === "admin" && (
+              {users?.role === "admin" && (
                 <>
                   <li>
                     <NavLink to="/admin" className="flex items-center gap-2"><FaTools /> Admin Dashboard</NavLink>
@@ -151,7 +154,7 @@ const Dashlayout = () => {
               )}
 
               {/* Rider */}
-              {currentUser?.role === "rider" && (
+              {users?.role === "rider" && (
                 <>
                   <li>
                     <NavLink to="/rider" className="flex items-center gap-2"><FaMotorcycle /> Rider Dashboard</NavLink>
@@ -162,7 +165,7 @@ const Dashlayout = () => {
                 </>
               )}
             </ul>
-            <p className="text-gray-400 text-sm">Logged in as: {currentUser?.email}</p>
+            <p className="text-gray-400 text-sm">Logged in as: {users?.email}</p>
           </div>
         </div>
 

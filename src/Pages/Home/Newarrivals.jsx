@@ -11,22 +11,23 @@ const Newarrivals = () => {
         const response = await axios.get("http://localhost:3000/products");
         console.log(response.data);
         // Sort by createdAt (newest first)
-        const sorted = response.data.sort(
+        const sorted = response.data.product.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
-        console.log(sorted);
+        console.log(sorted);  
         setProducts(sorted);
       } catch (error) {
-        toast.error("Failed to fetch products!", error);
+        console.log(error);
+        toast.error("Failed to fetch products!", error.message);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, []); 
 
   // const sort = products.sort((a, b) => (b.createdAt) - (a.createdAt));
   //     console.log(sort);
-
+  
   return (
     <div className="py-12 bg-gray-50">
       <h1 className="text-center text-3xl font-bold text-gray-800 mb-10">
