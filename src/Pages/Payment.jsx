@@ -21,7 +21,7 @@ const Payment = () => {
 
     try {
       if (method === "sslcommerz") {
-        const res = await axios.post("http://localhost:3000/payment/initiate", {
+        const res = await axios.post("https://shopty-server.onrender.com/payment/initiate", {
           email,
           phone,
           name: user?.displayName,

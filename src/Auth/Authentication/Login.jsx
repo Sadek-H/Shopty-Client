@@ -41,7 +41,7 @@ const Login = () => {
   const handlegoogle = ()=>{
             signInWithGoogle()
         .then((res)=>{
-          axios.post("http://localhost:3000/register", {
+          axios.post("https://shopty-server.onrender.com/register", {
             email: res.user.email,
             name: res.user.displayName,
             photo: res.user.photoURL,

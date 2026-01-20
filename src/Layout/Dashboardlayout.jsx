@@ -11,7 +11,7 @@ const Dashlayout = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/users/${user?.email}`).then((res) => {
+    axios.get(`https://shopty-server.onrender.com/users/${user?.email}`).then((res) => {
       if (res.data) {
         setUsers(res.data);
         console.log(res.data);

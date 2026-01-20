@@ -9,7 +9,7 @@ const PaymentStripe = () => {
   const [selectedproduct, setSelectedproduct] = useState(null);
   const { id } = useParams();
   useEffect(() => {
-    axios.get(`http://localhost:3000/products/${id}`).then((response) => {
+    axios.get(`https://shopty-server.onrender.com/products/${id}`).then((response) => {
       //  console.log(response.data);
       setSelectedproduct(response.data);
     });

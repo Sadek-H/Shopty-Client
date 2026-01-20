@@ -10,7 +10,7 @@ const BecomeVendor = () => {
     console.log("Vendor Request:", data);
    
 
-    axios.post("http://localhost:3000/becomevendors", data)
+    axios.post("https://shopty-server.onrender.com/becomevendors", data)
       .then(() => {
         toast.success("Vendor added successfully!");
        

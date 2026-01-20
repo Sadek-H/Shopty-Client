@@ -50,7 +50,7 @@ const RemoveInput = (index) => {
   
 
     axios
-      .post("http://localhost:3000/products", formdata, {
+      .post("https://shopty-server.onrender.com/products", formdata, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {

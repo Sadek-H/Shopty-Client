@@ -38,7 +38,7 @@ const Register = () => {
           setUser({ ...res.user , displayName: name, photoURL: photo});
           // Backend API call
           axios
-            .post("http://localhost:3000/register", {
+            .post("https://shopty-server.onrender.com/register", {
               email,
               name,
               photo,
@@ -70,7 +70,7 @@ const Register = () => {
   const handleWithGoogle = () => {
     signInWithGoogle().then((res) => {
       axios
-        .post("http://localhost:3000/register", {
+        .post("https://shopty-server.onrender.com/register", {
           email: res.user.email,
           name: res.user.displayName,
           photo: res.user.photoURL,

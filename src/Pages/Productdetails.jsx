@@ -10,21 +10,21 @@ const Productdetails = () => {
   const data = useLoaderData();
   const { id } = useParams();
   const { user } = useContext(AuthContext);
-  console.log(user);
+  console.log(data);
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
   const [rating, setRating] = useState(null);
   const [reviews, setReviews] = useState([]);
  console.log(product);
   useEffect(() => {
-    const founddata = data?.find((p) => p._id = id);
+    const founddata = data.product.find((p) => p._id = id);
     setProduct(founddata);
   }, [data, id]);
 
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:3000/products/${id}/reviews`)
+        .get(`https://shopty-server.onrender.com/products/${id}/reviews`)
         .then((res) => setReviews(res.data))
         .catch((err) => console.error("Error fetching reviews:", err));
     }
@@ -54,7 +54,7 @@ const Productdetails = () => {
     };
 
     axios
-      .post(`http://localhost:3000/products/${id}/reviews`, reviewData)
+      .post(`https://shopty-server.onrender.com/products/${id}/reviews`, reviewData)
       .then((res) => {
         console.log(res.data);
         toast.success("Review submitted successfully!");
@@ -71,7 +71,7 @@ const Productdetails = () => {
 
   // Handle review delete
   const handleDeleteReview = (reviewId) => {
-    axios.delete(`http://localhost:3000/reviews/${reviewId}`).then(() => {
+    axios.delete(`https://shopty-server.onrender.com/reviews/${reviewId}`).then(() => {
       toast.success("Review deleted successfully!");
       setReviews((prevreview) =>
         prevreview.filter((rev) => rev._id !== reviewId)

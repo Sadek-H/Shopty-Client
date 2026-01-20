@@ -11,7 +11,7 @@ const BecomeRider = () => {
     console.log('Rider Application:', data);
 
 
-    axios.post("http://localhost:3000/becomeRiders", data)
+    axios.post("https://shopty-server.onrender.com/becomeRiders", data)
       .then((res) => {
        if(res.data){
          toast.success("Rider added successfully!");

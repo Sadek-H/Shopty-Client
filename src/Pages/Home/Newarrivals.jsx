@@ -8,7 +8,7 @@ const Newarrivals = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products");
+        const response = await axios.get("https://shopty-server.onrender.com/products");
         console.log(response.data);
         // Sort by createdAt (newest first)
         const sorted = response.data.product.sort(

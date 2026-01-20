@@ -38,12 +38,12 @@ const router = createBrowserRouter([
       {
         path: "/products/:id",
         element: <Productdetails />,
-        loader: () => fetch("http://localhost:3000/products"),
+        loader: () => fetch("https://shopty-server.onrender.com/products"),
       },
       {
         path: "/payment/:id",
         element: <Payment />,
-        loader: () => fetch("http://localhost:3000/products"),
+        loader: () => fetch("https://shopty-server.onrender.com/products"),
       },
       {
         path: "/success",
