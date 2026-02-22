@@ -8,9 +8,10 @@ const stripePromice = loadStripe(import.meta.env.VITE_payment_key);
 const PaymentStripe = () => {
   const [selectedproduct, setSelectedproduct] = useState(null);
   const { id } = useParams();
+  console.log(id);
   useEffect(() => {
     axios.get(`https://shopty-server.onrender.com/products/${id}`).then((response) => {
-      //  console.log(response.data);
+        console.log(response.data);
       setSelectedproduct(response.data);
     });
   }, [id]);

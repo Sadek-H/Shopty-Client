@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { NavLink } from "react-router";
 import { AuthContext } from "../Auth/AuthProvider";
 import { toast } from "react-toastify";
-import { Tooltip } from 'react-tooltip'
+import { Tooltip } from "react-tooltip";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signout } = useContext(AuthContext);
@@ -41,7 +41,6 @@ const Navbar = () => {
             <NavLink to="/products" className="hover:text-blue-600 transition">
               Products
             </NavLink>
-          
           </div>
 
           {/* Right Section */}
@@ -53,7 +52,7 @@ const Navbar = () => {
                 placeholder="Search..."
                 className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl 
                 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
+              />  
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
                 fill="none"
@@ -73,20 +72,23 @@ const Navbar = () => {
             <div className="hidden lg:flex gap-3">
               {user ? (
                 <>
-                <a id="clickable">
-                   <img
-                    className="w-8 h-8 rounded-full"
-                    src={user?.photoURL}
-                    alt=""
-                  />
-                </a>
+                  <a id="clickable">
+                    <img
+                      className="w-8 h-8 rounded-full"
+                      src={user?.photoURL}
+                      alt=""
+                    />
+                  </a>
 
                   <Tooltip anchorSelect="#clickable" clickable place="bottom">
-                     <NavLink to="/dashboard" className="hover:text-blue-600 transition">
-              Dashboard
-            </NavLink>
+                    <NavLink
+                      to="/dashboard"
+                      className="hover:text-blue-600 transition"
+                    >
+                      Dashboard
+                    </NavLink>
                   </Tooltip>
-                 
+
                   <NavLink
                     onClick={handleLogout}
                     className="px-5 py-2 text-sm font-medium text-blue-600 border border-blue-600 

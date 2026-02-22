@@ -4,16 +4,17 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Auth/AuthProvider";
 
 
 const CheckoutForm = ({ product }) => {
+  console.log(product);
   const stripe = useStripe();
   const elements = useElements();
- const {user} = use(AuthContext);
- console.log(user);
+ const {user} = useContext(AuthContext);
+ //console.log(user);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
@@ -21,13 +22,17 @@ const CheckoutForm = ({ product }) => {
 
   // Fetch clientSecret from backend
   useEffect(() => {
-    if (!product?.price) return;
+    console.log("useEffect running");
+    if (!product?.price){
+      console.log("No product id");
+      return;
+    } 
 
     setLoading(true);
     axios
-      .post("https://shopty-server.onrender.com/create-payment-intent", {  id: product._id })
+      .post("https://shopty-server.onrender.com/create-payment", {  id: product._id })
       .then((res) => {
-      //  console.log("ClientSecret Response:", res.data);
+       console.log("ClientSecret Response:", res.data);
         setClientSecret(res.data.clientSecret);
       })
       .catch((err) => {
@@ -37,71 +42,58 @@ const CheckoutForm = ({ product }) => {
       .finally(() => setLoading(false));
   }, [product?.price, product?._id]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("🚀 handleSubmit called");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!stripe || !elements) {
-      toast("Stripe or Elements not ready");
+  if (!stripe || !elements || !clientSecret) return;
+
+  setLoading(true);
+  setErrorMsg("");
+
+  const cardElement = elements.getElement(CardElement);
+
+  try {
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card: cardElement },
+    });
+    console.log(result);
+
+    if (result.error) {
+      setErrorMsg(result.error.message);
       return;
     }
 
-    if (!clientSecret) {
-      toast("ClientSecret not available yet");
-      return;
+    if (result.paymentIntent.status === "succeeded") {
+     const paymentDetails = {
+  transactionId: result.paymentIntent.id,
+  amount: product.price,
+  currency: "usd",
+  paymentMethod: "card",
+  status: result.paymentIntent.status,
+};
+
+      await axios.post(
+        "https://shopty-server.onrender.com/payments",
+        paymentDetails
+      );
+
+      toast("Payment Successful");
+      setSuccess(true);
     }
+  } catch (err) {
+    console.error(err);
+    setErrorMsg("Payment failed");
+  } finally {
+    setLoading(false); 
+  }
+};
 
-    setLoading(true);
-    setErrorMsg("");
-
-    const cardElement = elements.getElement(CardElement);
-
-    stripe
-      .confirmCardPayment(clientSecret, { payment_method: { card: cardElement } })
-      .then((result) => {
-        console.log(result);
-        console.log("✅ confirmCardPayment result:", result); 
-
-        if (result.error) {
-          console.error("❌ Payment failed:", result.error);
-          setErrorMsg(result.error.message);
-        } 
-        
-        if(result.paymentIntent.status === "succeeded"){
-          const paymentDetails = {
-            email: user?.email,
-            method: "stripe",
-            transactionId: product.id,
-            amount: product.price,
-            date: new Date(),
-          
-          };
-           axios
-            .post("https://shopty-server.onrender.com/payments", 
-              paymentDetails,
-            )
-            .then(() => {
-              toast("Payment Successful");
-            })
-            .catch((err) => {
-              console.error("Saving payment info failed:", err);
-              setErrorMsg("Payment succeeded but saving info failed.");
-            });
-          }
-
-        setSuccess(true);
-      
-         
-        })
-
-    
-   };
 
   return (
     <div className="max-w-md mx-auto p-6 rounded shadow bg-white">
       {success ? (
         <div className="text-green-600 font-semibold text-center">
-          ✅ Payment successful!
+           Payment successful!
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -123,8 +115,8 @@ const CheckoutForm = ({ product }) => {
 
           <button
             type="submit"
-            onAbort={(e) => e.preventDefault()}
-            disabled={!stripe || loading || !clientSecret}
+           
+            disabled={!stripe  || !clientSecret}
             className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg"
           >
             {loading ? "Processing..." : "Proceed to Pay"}
