@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { FiPlus, FiMinus } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 const categoryData = {
   Electronics: ["Mobile", "Laptops", "Headphones", "Cameras"],
@@ -18,6 +19,19 @@ const Products = () => {
   const [selectedPrice, setSelectedPrice] = useState("");
  console.log(subcategory);
  console.log(products);
+
+  const addToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existing = cart.find(item => item._id === product._id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast.success('Added to cart');
+  };
+
   useEffect(() => {
     axios.get("https://shopty-server.onrender.com/subcategories").then((res) => {
       if (res.data.length === 0) {
@@ -193,7 +207,10 @@ const Products = () => {
                       </p>
                     </div>
                     <div className="flex gap-3 mt-5">
-                      <button className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg font-medium hover:opacity-90 transition">
+                      <button
+                        onClick={() => addToCart(p)}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg font-medium hover:opacity-90 transition"
+                      >
                         Add to Cart
                       </button>
                       <Link

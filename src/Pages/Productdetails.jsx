@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useLoaderData, useParams } from "react-router";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router";
 import Rating from "react-rating";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ const Productdetails = () => {
   const data = useLoaderData();
   const { id } = useParams();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   console.log(data);
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
@@ -88,6 +89,12 @@ const Productdetails = () => {
         : product.specifications || [];
   } catch (err) {
     specifications = [];
+  }
+
+  const handlecart = () => {
+
+    navigate("/dashboard/cart");
+
   }
 
   return (
@@ -188,7 +195,7 @@ const Productdetails = () => {
           >
             Buy Now
           </Link>
-          <button className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition">
+          <button onClick={handlecart} className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition">
             Add to Cart
           </button>
         </div>

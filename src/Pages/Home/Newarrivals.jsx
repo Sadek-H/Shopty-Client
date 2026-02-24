@@ -25,6 +25,18 @@ const Newarrivals = () => {
     fetchProducts();
   }, []); 
 
+  const addToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existing = cart.find(item => item._id === product._id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast.success('Added to cart');
+  };
+
   // const sort = products.sort((a, b) => (b.createdAt) - (a.createdAt));
   //     console.log(sort);
   
@@ -64,7 +76,10 @@ const Newarrivals = () => {
 
               {/* Buttons */}
               <div className="flex justify-between gap-2 mt-auto pt-4">
-                <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                <button
+                  onClick={() => addToCart(p)}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                >
                   Add to Cart
                 </button>
                 <Link

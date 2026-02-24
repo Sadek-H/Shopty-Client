@@ -13,6 +13,7 @@ import Productdetails from "../Pages/Productdetails";
 import Payment from "../Pages/Payment";
 import SuccessPay from "../Pages/SuccessPay";
 import Products from "../Pages/Products/Products";
+import Cartmanage from "../Pages/Dashboard/User/cartmanage";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardHome />,
+      },
+      {
+        path: "cart",
+        element: <Cartmanage/>,
       },
       {
         path: "add-product",

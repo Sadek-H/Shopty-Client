@@ -103,10 +103,10 @@ const Dashlayout = () => {
                     <NavLink to="/" className="flex items-center gap-2"><FaHome /> Home</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/products" className="flex items-center gap-2"><FaBox /> Cart Manage</NavLink>
+                    <NavLink to="cart" className="flex items-center gap-2"><FaBox /> Cart Manage</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/reports" className="flex items-center gap-2"><FaClipboardList /> Order List</NavLink>
+                    <NavLink to="dashboard/reports" className="flex items-center gap-2"><FaClipboardList /> Order List</NavLink>
                   </li>
                   <li>
                     <NavLink to="become-vendor" className="flex items-center gap-2"><FaUserPlus /> Become a Vendor</NavLink>
