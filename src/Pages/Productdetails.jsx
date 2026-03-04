@@ -90,12 +90,27 @@ const Productdetails = () => {
   } catch (err) {
     specifications = [];
   }
+const handlecart = async () => {
+  try {
+    await axios.post("https://shopty-server.onrender.com/dashboard/cart", {
+      cartId: product._id,
+   cartname: product.name,
+   subcategory: product.subcategory,
+   price: product.price,
+   stock: product.stock,
+   image: product.images,
+   email: user.email
+    })
+    .then((res) => console.log(res.data));
 
-  const handlecart = () => {
-
+    toast.success("Product added to cart!");
     navigate("/dashboard/cart");
 
+  } catch (error) {
+    console.log(error.response?.data);
+    toast.error("Failed to add");
   }
+};
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -195,7 +210,7 @@ const Productdetails = () => {
           >
             Buy Now
           </Link>
-          <button onClick={handlecart} className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition">
+          <button onClick={() => handlecart(product._id)} className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition">
             Add to Cart
           </button>
         </div>
