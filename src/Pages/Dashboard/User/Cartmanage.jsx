@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-
+import { toast } from "react-toastify";
 const Cartmanage = () => {
   const [cart, setCart] = useState([]);
 
@@ -14,6 +14,20 @@ const Cartmanage = () => {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
+  const handleremovecart = (id) => {
+      axios.delete(`https://shopty-server.onrender.com/cart/${id}`,  { id  })
+        .then((res) => {
+            console.log(res.data);
+            setCart((precart) => precart.filter((item) => item._id !== id));
+            toast.success("Item removed from cart");
+
+        })
+        .catch((err) => {
+          console.error("Error removing item from cart:", err);
+          toast.error("Failed to remove item from cart");
+        });
+
+  };
   return (
     <div className="min-h-screen bg-gray-100 p-6">
 
@@ -43,7 +57,7 @@ const Cartmanage = () => {
                   </div>
                 </div>
 
-                <button className="text-red-500 font-semibold">
+                <button onClick={() => handleremovecart(item._id)} className="text-red-500 font-semibold">
                   Remove
                 </button>
               </div>

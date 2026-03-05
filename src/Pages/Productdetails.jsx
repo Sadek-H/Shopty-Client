@@ -91,20 +91,24 @@ const Productdetails = () => {
     specifications = [];
   }
 const handlecart = async () => {
+ 
   try {
     await axios.post("https://shopty-server.onrender.com/dashboard/cart", {
-      cartId: product._id,
+    //  cartId: product._id,
    cartname: product.name,
    subcategory: product.subcategory,
    price: product.price,
    stock: product.stock,
    image: product.images,
-   email: user.email
+  //  email: user.email
     })
-    .then((res) => console.log(res.data));
-
+    .then((res) =>{
+       console.log(res.data)
+  
     toast.success("Product added to cart!");
-    navigate("/dashboard/cart");
+    })
+
+    //navigate("/dashboard/cart");
 
   } catch (error) {
     console.log(error.response?.data);
