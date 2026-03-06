@@ -8,6 +8,7 @@ const Cartmanage = () => {
   useEffect(() => {
     axios.get("https://shopty-server.onrender.com/cart")
       .then((res) => {
+        console.log(res);
         setCart(res.data.carts);
       });
   }, []);
@@ -74,7 +75,7 @@ const Cartmanage = () => {
                 Continue Shopping
               </Link>
 
-              <Link to="/checkout" className="bg-green-500 text-white px-4 py-2 rounded">
+              <Link to={`/payment/${cart[0]._id}`} className="bg-green-500 text-white px-4 py-2 rounded">
                 Proceed to Checkout
               </Link>
             </div>

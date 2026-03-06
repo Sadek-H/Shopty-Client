@@ -112,7 +112,14 @@ const handlecart = async () => {
 
   } catch (error) {
     console.log(error.response?.data);
-    toast.error("Failed to add");
+    if(error.response?.status == 400 ){
+      toast.error(error.response.data.message);
+      return;
+    }
+    else{
+
+      toast.error("Failed to add");
+    }
   }
 };
 

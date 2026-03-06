@@ -106,7 +106,7 @@ const Dashlayout = () => {
                     <NavLink to="cart" className="flex items-center gap-2"><FaBox /> Cart Manage</NavLink>
                   </li>
                   <li>
-                    <NavLink to="dashboard/reports" className="flex items-center gap-2"><FaClipboardList /> Order List</NavLink>
+                    <NavLink to="orders" className="flex items-center gap-2"><FaClipboardList /> Order List</NavLink>
                   </li>
                   <li>
                     <NavLink to="become-vendor" className="flex items-center gap-2"><FaUserPlus /> Become a Vendor</NavLink>
@@ -130,7 +130,7 @@ const Dashlayout = () => {
                     <NavLink to="add-product" className="flex items-center gap-2"><FaPlus /> Add Product</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/vendor/orders" className="flex items-center gap-2"><FaClipboardList /> User Orders</NavLink>
+                    <NavLink to="/orders" className="flex items-center gap-2"><FaClipboardList /> User Orders</NavLink>
                   </li>
                   <li>
                     <NavLink to="/vendor/riders" className="flex items-center gap-2"><FaMotorcycle /> Available Riders</NavLink>

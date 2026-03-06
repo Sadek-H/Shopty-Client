@@ -14,6 +14,7 @@ import Payment from "../Pages/Payment";
 import SuccessPay from "../Pages/SuccessPay";
 import Products from "../Pages/Products/Products";
 import Cartmanage from "../Pages/Dashboard/User/cartmanage";
+import Orderlist from "../Pages/Dashboard/User/Orderlist";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cartmanage/>,
+      },
+      {
+        path: "orders",
+        element: <Orderlist/>,
       },
       {
         path: "add-product",
