@@ -7,6 +7,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Auth/AuthProvider";
+import { EmailAuthCredential } from "firebase/auth";
 
 
 const CheckoutForm = ({ product }) => {
@@ -65,6 +66,7 @@ const CheckoutForm = ({ product }) => {
 
     if (result.paymentIntent.status === "succeeded") {
      const paymentDetails = {
+    email: user?.email,
   transactionId: result.paymentIntent.id,
   amount: product.price,
   currency: "usd",
