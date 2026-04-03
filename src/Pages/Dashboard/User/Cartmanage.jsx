@@ -6,7 +6,7 @@ const Cartmanage = () => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    axios.get("https://shopty-server.onrender.com/cart")
+    axios.get("http://localhost:3000/cart")
       .then((res) => {
         console.log(res);
         setCart(res.data.carts);
@@ -16,7 +16,7 @@ const Cartmanage = () => {
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
   const handleremovecart = (id) => {
-      axios.delete(`https://shopty-server.onrender.com/cart/${id}`,  { id  })
+      axios.delete(`http://localhost:3000/cart/${id}`,  { id  })
         .then((res) => {
             console.log(res.data);
             setCart((precart) => precart.filter((item) => item._id !== id));

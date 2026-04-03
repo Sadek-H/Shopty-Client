@@ -33,10 +33,10 @@ const Products = () => {
   };
 
   useEffect(() => {
-    axios.get("https://shopty-server.onrender.com/subcategories").then((res) => {
+    axios.get("http://localhost:3000/subcategories").then((res) => {
       if (res.data.length === 0) {
         axios
-          .post("https://shopty-server.onrender.com/subcategories", categoryData)
+          .post("http://localhost:3000/subcategories", categoryData)
           .then((res) => setSubcategory(res.data));
       } else {
         const { _id, ...rest } = res.data[0];
@@ -54,7 +54,7 @@ const Products = () => {
     if (price) setSelectedPrice(price);
 
     axios
-      .get("https://shopty-server.onrender.com/products", {
+      .get("http://localhost:3000/products", {
         params: { subcategory: sub || "", price: price || "" },
       })
       .then((res) => setProducts(res.data))
@@ -79,7 +79,7 @@ const Products = () => {
       if (selectedCategory) params.subcategory = selectedCategory;
       if (selectedPrice) params.price = selectedPrice;
 
-      const res = await axios.get("https://shopty-server.onrender.com/products", { params });
+      const res = await axios.get("http://localhost:3000/products", { params });
       setProducts(res.data);
 
       // Update URL so filters persist after reload

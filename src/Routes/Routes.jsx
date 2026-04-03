@@ -15,6 +15,7 @@ import SuccessPay from "../Pages/SuccessPay";
 import Products from "../Pages/Products/Products";
 import Cartmanage from "../Pages/Dashboard/User/cartmanage";
 import Orderlist from "../Pages/Dashboard/User/Orderlist";
+import VendorProduct from "../Pages/Dashboard/vendor/VendorProduct";
 
 const router = createBrowserRouter([
   {
@@ -40,12 +41,12 @@ const router = createBrowserRouter([
       {
         path: "/products/:id",
         element: <Productdetails />,
-        loader: () => fetch("https://shopty-server.onrender.com/products"),
+        loader: () => fetch("http://localhost:3000/products"),
       },
       {
         path: "/payment/:id",
         element: <Payment />,
-        loader: () => fetch("https://shopty-server.onrender.com/products"),
+        loader: () => fetch("http://localhost:3000/products"),
       },
       {
         path: "/success",
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: "become-rider",
         element: <BecomeRider />,
+      },
+      {
+        path: "Myproducts",
+        element: <VendorProduct />,
       },
     ],
   },

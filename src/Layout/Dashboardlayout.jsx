@@ -11,7 +11,7 @@ const Dashlayout = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get(`https://shopty-server.onrender.com/users/${user?.email}`).then((res) => {
+    axios.get(`http://localhost:3000/users/${user?.email}`).then((res) => {
       if (res.data) {
         setUsers(res.data);
         console.log(res.data);
@@ -124,16 +124,16 @@ const Dashlayout = () => {
                     <NavLink to="/" className="flex items-center gap-2"><FaHome /> Home</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/vendor/products" className="flex items-center gap-2"><FaBox /> My Products</NavLink>
+                    <NavLink to="Myproducts" className="flex items-center gap-2"><FaBox /> My Products</NavLink>
                   </li>
                   <li>
                     <NavLink to="add-product" className="flex items-center gap-2"><FaPlus /> Add Product</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/orders" className="flex items-center gap-2"><FaClipboardList /> User Orders</NavLink>
+                    <NavLink to="orders" className="flex items-center gap-2"><FaClipboardList /> User Orders</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/vendor/riders" className="flex items-center gap-2"><FaMotorcycle /> Available Riders</NavLink>
+                    <NavLink to="riders" className="flex items-center gap-2"><FaMotorcycle /> Available Riders</NavLink>
                   </li>
                 </>
               )}

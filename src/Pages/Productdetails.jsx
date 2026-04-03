@@ -25,7 +25,7 @@ const Productdetails = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://shopty-server.onrender.com/products/${id}/reviews`)
+        .get(`http://localhost:3000/products/${id}/reviews`)
         .then((res) => setReviews(res.data))
         .catch((err) => console.error("Error fetching reviews:", err));
     }
@@ -55,7 +55,7 @@ const Productdetails = () => {
     };
 
     axios
-      .post(`https://shopty-server.onrender.com/products/${id}/reviews`, reviewData)
+      .post(`http://localhost:3000/products/${id}/reviews`, reviewData)
       .then((res) => {
         console.log(res.data);
         toast.success("Review submitted successfully!");
@@ -72,7 +72,7 @@ const Productdetails = () => {
 
   // Handle review delete
   const handleDeleteReview = (reviewId) => {
-    axios.delete(`https://shopty-server.onrender.com/reviews/${reviewId}`).then(() => {
+    axios.delete(`http://localhost:3000/reviews/${reviewId}`).then(() => {
       toast.success("Review deleted successfully!");
       setReviews((prevreview) =>
         prevreview.filter((rev) => rev._id !== reviewId)
@@ -93,7 +93,7 @@ const Productdetails = () => {
 const handlecart = async () => {
  
   try {
-    await axios.post("https://shopty-server.onrender.com/dashboard/cart", {
+    await axios.post("http://localhost:3000/dashboard/cart", {
     //  cartId: product._id,
    cartname: product.name,
    subcategory: product.subcategory,

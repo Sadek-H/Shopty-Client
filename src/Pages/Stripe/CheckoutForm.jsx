@@ -31,7 +31,7 @@ const CheckoutForm = ({ product }) => {
 
     setLoading(true);
     axios
-      .post("https://shopty-server.onrender.com/create-payment", {  id: product._id })
+      .post("http://localhost:3000/create-payment", {  id: product._id })
       .then((res) => {
        console.log("ClientSecret Response:", res.data);
         setClientSecret(res.data.clientSecret);
@@ -75,7 +75,7 @@ const CheckoutForm = ({ product }) => {
 };
 
       await axios.post(
-        "https://shopty-server.onrender.com/payments",
+        "http://localhost:3000/payments",
         paymentDetails
       );
 

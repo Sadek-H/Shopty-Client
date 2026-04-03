@@ -7,12 +7,12 @@ const Orderlist = () => {
   const user = useContext(AuthContext);
   console.log(user);
   useEffect(() => {
-    axios.get(`https://shopty-server.onrender.com/orders/${user?.email}`)
+    axios.get(`http://localhost:3000/orders/${user?.email}`)
       .then((res) => {
         console.log(res.data);
         setOrder(res.data.payments);
       });
-  }, []);
+  }, [user?.email]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
