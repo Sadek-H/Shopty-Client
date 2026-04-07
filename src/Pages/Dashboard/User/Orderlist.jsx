@@ -5,14 +5,14 @@ import { AuthContext } from "../../../Auth/AuthProvider";
 const Orderlist = () => {
   const [order, setOrder] = useState([]);
   const user = useContext(AuthContext);
-  console.log(user);
+  console.log(user.user?.email);
   useEffect(() => {
-    axios.get(`http://localhost:3000/orders/${user?.email}`)
+    axios.get(`http://localhost:3000/orders/${user.user?.email}`)
       .then((res) => {
         console.log(res.data);
         setOrder(res.data.payments);
       });
-  }, [user?.email]);
+  }, [user.user?.email]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
