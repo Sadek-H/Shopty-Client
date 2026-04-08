@@ -17,6 +17,7 @@ import Cartmanage from "../Pages/Dashboard/User/cartmanage";
 import Orderlist from "../Pages/Dashboard/User/Orderlist";
 import VendorProduct from "../Pages/Dashboard/vendor/VendorProduct";
 import Riders from "../Pages/Dashboard/vendor/Riders";
+import Manageusers from "../Pages/Dashboard/Admin/Manageusers";
 
 const router = createBrowserRouter([
   {
@@ -90,6 +91,11 @@ const router = createBrowserRouter([
       {
         path: "riders",
         element: <Riders />,
+      },
+      {
+        path: "users",
+        element: <Manageusers />,
+        loader: ()=> fetch("http://localhost:3000/users"),
       },
     ],
   },

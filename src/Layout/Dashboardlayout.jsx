@@ -145,10 +145,10 @@ const Dashlayout = () => {
                     <NavLink to="/admin" className="flex items-center gap-2"><FaTools /> Admin Dashboard</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/admin/users" className="flex items-center gap-2"><FaUsers /> Manage Users</NavLink>
+                    <NavLink to="users" className="flex items-center gap-2"><FaUsers /> Manage Users</NavLink>
                   </li>
                   <li>
-                    <NavLink to="/admin/reports" className="flex items-center gap-2"><FaClipboardList /> Reports</NavLink>
+                    <NavLink to="reports" className="flex items-center gap-2"><FaClipboardList /> Reports</NavLink>
                   </li>
                 </>
               )}
