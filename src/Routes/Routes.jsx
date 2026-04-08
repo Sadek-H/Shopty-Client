@@ -16,6 +16,7 @@ import Products from "../Pages/Products/Products";
 import Cartmanage from "../Pages/Dashboard/User/cartmanage";
 import Orderlist from "../Pages/Dashboard/User/Orderlist";
 import VendorProduct from "../Pages/Dashboard/vendor/VendorProduct";
+import Riders from "../Pages/Dashboard/vendor/Riders";
 
 const router = createBrowserRouter([
   {
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
       {
         path: "Myproducts",
         element: <VendorProduct />,
+      },
+      {
+        path: "riders",
+        element: <Riders />,
       },
     ],
   },
