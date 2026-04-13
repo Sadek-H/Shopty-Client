@@ -141,11 +141,12 @@ const Dashlayout = () => {
               {/* Admin */}
               {users?.role === "admin" && (
                 <>
-                  <li>
-                    <NavLink to="/admin" className="flex items-center gap-2"><FaTools /> Admin Dashboard</NavLink>
-                  </li>
+                  
                   <li>
                     <NavLink to="users" className="flex items-center gap-2"><FaUsers /> Manage Users</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="vendor-requests" className="flex items-center gap-2"><FaUserPlus /> Vendor Requests</NavLink>
                   </li>
                   <li>
                     <NavLink to="reports" className="flex items-center gap-2"><FaClipboardList /> Reports</NavLink>
