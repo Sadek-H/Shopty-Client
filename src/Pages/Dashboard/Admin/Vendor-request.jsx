@@ -29,8 +29,18 @@ const VendorRequest = () => {
 
     }
 
-    const handlereject = (id)=>{
-
+    const handlereject = (id,status)=>{
+       axios.delete(`http://localhost:3000/approvevendor/${id}`, { status })
+         .then(res => {
+            console.log(res.data);
+            toast.error("Vendor rejected");
+            setVendors(prevVendors => prevVendors.map(vendor => vendor._id == id ? {...vendor. status}: vendor));
+         
+        })
+          .catch(err => {
+            console.log(err)
+            toast.error("Error rejecting vendor:", err);
+          });
     }
     return (
         <div>
